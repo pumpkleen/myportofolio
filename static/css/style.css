@@ -7,7 +7,7 @@
 :root {
     --ink: #D94EAC;
     --paper: #F1FEFF;
-    --accent: #EEE750;
+    --accent: #FCEC52;
     --accent-dark: #9BDCE4;
     --line: #e3d9c9;
     --text-muted: #3a8ca3;
@@ -32,7 +32,11 @@ h1, .brand {
 }
 
 .site-header {
+    position: sticky;
+    top: 0;
     border-bottom: 1px solid var(--line);
+    background-color: var(--accent);
+    z-index: 100;
 }
 
 .site-header .container {
@@ -194,3 +198,54 @@ h1, .brand {
     }
 }
 
+.experience{
+    padding: 4rem 0 5rem; /*4rem atas, 0 kanan kiri, 5 bawah*/
+    background-color: var(--accent-dark);
+}
+
+.section-title{
+    font-family: "Space Grotesk", -apple-system, sans-serif;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color:var(--ink);
+}
+
+.experience-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem; /* ini jarak antar kartu gitu biar gak nempel */
+}
+
+.experience-card{
+    background-color: var(--paper);
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.experience-card:hover{
+    transform:translateY(-5px);
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
+
+.experience-card h3{
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
+    color: var(--ink)
+}
+
+.experience-meta{
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.experience-desc{
+    font-size: 0.95rem;
+    color: var(--text-muted)
+}
