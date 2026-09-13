@@ -9,8 +9,7 @@ def show_main(request):
         "npm": "2506606093",
         "study_program": "S1 Sistem Informasi",
         "bio": (
-            "Mahasiswa Ilmu Komputer Universitas Indonesia yang tertarik "
-            "pada pengembangan aplikasi permainan."
+            "Mastering in kuru kuru. Sometimes do art sometimes code. Currently focused on game development."
         ),
     }
     return render(request, "index.html", context)

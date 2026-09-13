@@ -16,7 +16,7 @@
                 <img src="/static/img/Cuking.svg">
             </a>
             <nav>
-                <a href="{% url 'main:show_main' %}">Profile</a>
+                <a href="{% url 'main:show_main' %}" class="active">Profile</a>
                 <a href="{% url 'main:show_experience' %}">Experience</a>
             </nav>
         </div>
@@ -24,17 +24,18 @@
 
     <main>
         <section>
-            <img src="/static/img/Hero.svg" class="header">
+            <img src="/static/img/Hero2.svg" class="header">
         </section>
         <section class="hero" id="profile">
+            <a class="anchor" href="#identity"></a>
             <div class="container hero-grid">
-                <div class="hero-identity">
+                <div class="hero-identity"  id="identity">
                     <p class="hero-kicker">Information System &middot; Universitas Indonesia</p>
                     <h1> {{ name }} </h1>
                 </div>
                 <div class="hero-photo">
                     <div class="photo-block"></div>
-                    <img class="avatar" src="/static/img/cheryl.jpg" alt="Photo of {{name}}">
+                    <img class="avatar" src="/static/img/cheryl.png" alt="Photo of {{name}}">
                 </div>
                 <div class="hero-details">
                     <p class="bio">{{ bio }}</p>
@@ -49,46 +50,98 @@
                         </div>
                     </dl>
                     <div class="social-links">
-                        <a href="https://github.com/pumpkleen" class="social-link"target=”_blank><img src="/static/img/github-icon.png"></a>
-                        <a href="https://pumpkleen.itch.io/" class="social-link"target=”_blank><img src="/static/img/itch-icon.png"></a>
-                        <a href="https://www.linkedin.com/in/cheryl-mahira/" class="social-link"target=”_blank><img src="/static/img/linkedin-icon.png"></a>
-                        <a href="mailto:cheryl.mahira@ui.ac.id" class="social-link"target=”_blank><img src="/static/img/email-icon.png"></a>
+                        <a href="https://github.com/pumpkleen" class="social-link"target=”_blank><img src="/static/img/github-icon.png"><span class="social-name">GitHub</span></a>
+                        <a href="https://pumpkleen.itch.io/" class="social-link"target=”_blank><img src="/static/img/itch-icon.png"><span class="social-name">Itch.io</span></a>
+                        <a href="https://www.linkedin.com/in/cheryl-mahira/" class="social-link"target=”_blank><img src="/static/img/linkedin-icon.png"><span class="social-name">LinkedIn</span></a>
+                        <a href="mailto:cheryl.mahira@ui.ac.id" class="social-link"target=”_blank><img src="/static/img/email-icon.png"><span class="social-name">Email</span></a>
                     </div>
                 </div>
             </div>
         </section>
-        <section class="experience" id="experience">
-            <div class="container">
-                <h2 class="section-title">Experience</h2>
-                <div class="experience-grid">
-                    <article class="experience-card">
-                        <h3>Faculty of Computer Science, Universitas Indonesia</h3>
-                        <p class="experience-meta">Teaching Assistant of Discrete Mathematics 1 &middot; August 2026 - Present</p>
-                        <p class="experience-desc">Evaluated assignments and quizzes, provided constructive feedback to students, and assisted the primary lecturer in managing academic evaluations and coursework progression.</p>
-                    </article>
-                    <article class="experience-card">
-                        <h3>RISTEK Fasilkom UI</h3>
-                        <p class="experience-meta">Member Artist of Game Development &middot; Mar 2026 - Present</p>
-                        <p class="experience-desc">Designed and produced 2D/3D visual assets, user interfaces, and character designs for game prototypes using design software like Figma and Clip Studio Paint.</p>
-                    </article>
-                    <article class="experience-card">
-                        <h3>COMPFEST 18</h3>
-                        <p class="experience-meta">Expert Staff of UI/UX &middot; Jan 2026 - Present</p>
-                        <p class="experience-desc">Spearheaded the UI/UX design strategy for COMPFEST's digital platforms. Created intuitive wireframes, interactive prototypes, and maintained the design system to ensure a seamless experience for thousands of participants.</p>
-                    </article>
-                    <article class="experience-card">
-                        <h3>Dasar-Dasar Pemrograman 0</h3>
-                        <p class="experience-meta">Programming Mentor &middot; 2026</p>
-                        <p class="experience-desc">Mentored first-year students to ease their transition into university-level computer science. Provided personalized guidance on fundamental programming logic and academic survival strategies.</p>
-                    </article>
+        <section class="profile-grid">
+            <div class="education-grid">
+                <div class="kucing">
+                    <img class="icon-kucing" src="/static/img/Cuking.svg"><img class="icon-kucing" src="/static/img/Cuking.svg"><img class="icon-kucing" src="/static/img/Cuking.svg">
                 </div>
+                <div class="bridge"></div>
+                <div class="education">
+                    <h2 class="section-title">Educations</h2>
+                    <h3>Universitas Indonesia</h3>
+                    <p>Computer Science, Information System</p>
+                    <p>2025 - present</p>
+                    <h2 class="section-title">Skills</h2>
+                    <div class="softwares">
+                        <img class="software" src="/static/img/simple-icons_aseprite.svg" alt="aseprite">
+                        <img class="software" src="/static/img/arcticons_clip-studio.svg" alt="clip studio paint">
+                        <img class="software" src="/static/img/akar-icons_figma-fill.svg" alt="figma">
+                    </div>
+                    <div class="skills-grid">
+                        <p class="skill">UI/UX</p>
+                        <p class="skill">Character Design</p>
+                        <p class="skill">Tilemap</p>
+                        <p class="skill">Spritesheet</p>
+                        <p class="skill">Wireframe</p>
+                        <p class="skill">Web Design</p>
+                    </div>
+                </div>
+            </div>
+            <div class="experience-grid">
+                <h2 class="section-title">Experience</h2>
+                <details class="experience-card">
+                    <summary>
+                        <h3>Teaching Assistant of Discrete Mathematics 1</h3>
+                        <p class="experience-meta">Faculty of Computer Science, Universitas Indonesia</p>
+                        <p class="experience-meta">August 2026 - Present</p>
+                    </summary>
+                        <p class="experience-desc">Evaluated assignments and quizzes, provided constructive feedback to students, and assisted the primary lecturer in managing academic evaluations and coursework progression.</p>
+                </details>
+                <details class="experience-card">
+                    <summary>
+                        <h3>Programming Mentor</h3>
+                        <p class="experience-meta">Dasar-Dasar Pemrograman 0</p>
+                        <p class="experience-meta">June 2026 - Present</p>
+                    </summary>
+                        <p class="experience-desc">Mentored incoming freshmen to ease their transition into university-level computer science. Taught fundamental programming logic, algorithmic thinking, and basic coding concepts in a highly supportive environment.</p>
+                </details>
+                <details class="experience-card">
+                    <summary>
+                        <h3>Main Artist of “Debunked!” (GEMASTIK Project)</h3>
+                        <p class="experience-meta">GEMASTIK XIX</p>
+                        <p class="experience-meta">April 2026 - Present</p>
+                    </summary>
+                        <p class="experience-desc">Led the visual direction and asset production for our game project at GEMASTIK competition. Designed engaging characters, environments, and UI elements to elevate the project's overall aesthetics and user experience.</p>
+                </details>
+                <details class="experience-card">
+                    <summary>
+                        <h3> Member Artist of Game Development</h3>
+                        <p class="experience-meta">RISTEK Fasilkom UI</p>
+                        <p class="experience-meta">March 2026 - Present</p>
+                    </summary>
+                        <p class="experience-desc">Collaborated closely with programmers and game designers to develop interactive game prototypes. Produced high-quality 2D visual assets, character designs, and user interfaces using industry-standard design tools.</p>
+                </details>
+                <details class="experience-card">
+                    <summary>
+                        <h3> Expert Staff of UI/UX</h3>
+                        <p class="experience-meta">COMPFEST 18</p>
+                        <p class="experience-meta">Jan 2026 - Present</p>
+                    </summary>
+                        <p class="experience-desc">Designed intuitive user interfaces and seamless user experiences for COMPFEST's digital platforms. Created wireframes, interactive prototypes, and collaborated with developers to ensure the design system is flawlessly implemented.</p>
+                </details>
+                <details class="experience-card">
+                    <summary>
+                        <h3>Freelance Digital Illustrator</h3>
+                        <p class="experience-meta">Self-Employed</p>
+                        <p class="experience-meta">Since i was born i guess</p>
+                    </summary>
+                        <p class="experience-desc">Delivered high-quality custom illustrations and character designs for various clients. Managed the end-to-end creative process from conceptual sketching to final rendering while ensuring excellent client communication.</p>
+                </details>
             </div>
         </section>
     </main>
 
     <footer class="site-footer">
         <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
+            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia. (v1.2)</p>
         </div>
     </footer>
 </body>
