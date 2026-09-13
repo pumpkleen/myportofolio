@@ -233,6 +233,7 @@ main {
     margin: -200px auto 0 auto;     
     position: relative; 
     z-index: 10;
+    padding-bottom: 3rem;
 }
 
 .kucing{
@@ -535,12 +536,6 @@ main {
     font-size: 2rem;
 }
 
-.experience-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
-}
-
 .experience-category {
     color: var(--accent-dark);
     font-size: 0.75rem;
@@ -573,6 +568,11 @@ main {
             "details";
         text-align: center;
         gap: 2rem;
+    }
+
+    .profile-grid {
+        zoom: 0.75;
+        gap: 2rem; 
     }
 
     .hero-photo {
