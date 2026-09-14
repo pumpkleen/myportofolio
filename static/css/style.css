@@ -559,6 +559,82 @@ main {
     font-weight: 600;
 }
 
+.project-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 300px);
+    gap: 1.5rem;    
+    justify-content: start;
+}
+
+.project-card{
+    display: flex;
+    flex-direction: column;
+    background-color: var(--ink);
+    color: var(--blek);
+    padding: 1rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.project-card img{
+    width: 100%;
+    max-width: 300px; 
+    height: auto;
+    object-fit: cover;
+    border-radius: var(--softer-radius);
+}
+
+.project-card summary{
+    list-style-type: none;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+}
+
+.project-card[open]{
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.project-card[open] .project-desc {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed var(--line);     
+    animation: fade-in 0.4s ease-in-out;
+    white-space: normal; 
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+    color: var(--blek);
+}
+
+.project-card:hover{
+    transform:translateY(-5px);
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+}
+
+.project-link{
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.6rem 0.6rem;
+    background-color: var(--accent);
+    color: var(--paper);
+    text-decoration: none;
+    font-weight: 700;
+    font-family: 'Fragment Mono', -apple-system, sans-serif;
+    border-radius: var(--radius);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-link:hover {
+    background-color: var(--accent-dark);
+    box-shadow: 0 4px 12px rgba(217, 78, 172, 0.4); /* Efek glow warna pink */
+    color: var(--blek);
+}
+
 @media (max-width: 600px) {
     .hero-grid {
         grid-template-columns: 1fr;
@@ -566,6 +642,18 @@ main {
             "identity"
             "photo"
             "details";
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .experience-grid{
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2rem;
+    }
+
+    .project-grid{
+        grid-template-columns: 1fr;
         text-align: center;
         gap: 2rem;
     }
