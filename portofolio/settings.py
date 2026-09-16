@@ -75,6 +75,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'portofolio.wsgi.application'
 
+# gunakan https:// untuk trailing urlnya
+CSRF_TRUSTED_ORIGINS = ["https://cheryl-mahira-myportofolio.pws.cs.ui.ac.id"]
+
 
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
