@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Kirim Menfess Baru</h2>
+    
+    <!-- enctype wajib ada agar gambar bisa dikirim -->
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <!-- Render form otomatis dari Django -->
+        {{ form.as_p }}
+        
+        <button type="submit" class="btn-primary">Kirim Menfess!</button>
+    </form>
+    
+    <br>
+    <a href="{% url 'main:show_menfess' %}">&larr; Batal dan Kembali</a>
+</div>
+{% endblock content %}

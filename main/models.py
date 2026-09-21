@@ -37,3 +37,13 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+class Menfess(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    sender = models.CharField(max_length=100)
+    message = models.TextField()
+    image = models.ImageField(upload_to='menfess_images/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+            return "Message from {self.sender}"

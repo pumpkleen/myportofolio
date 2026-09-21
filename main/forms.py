@@ -1,6 +1,6 @@
 from django.forms import ModelForm, TextInput, Textarea, URLInput
 
-from main.models import Project
+from main.models import Project, Menfess
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -43,3 +43,8 @@ class ProjectForm(ModelForm):
                 }
             ),
         }
+
+class MenfessForm(ModelForm):
+    class Meta:
+        model = Menfess
+        fields = ["sender", "message", "image"]

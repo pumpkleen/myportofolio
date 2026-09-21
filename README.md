@@ -30,3 +30,55 @@ Semakin sering kita membongkar berkas HTML untuk mengganti data, semakin tinggi 
 makemigrations adalah proses di mana Django mencatat setiap perubahan yang kita buat pada berkas models.py (seperti saat saya menambahkan kelas Project). Hasilnya adalah sebuah berkas cetak biru (skema/instruksi) yang berisi detail apa saja yang berubah.
 
 Migrate adalah proses eksekusi. Django akan membaca berkas cetak biru yang dibuat oleh makemigrations tadi, lalu menerapkannya secara fisik ke dalam struktur database kita yang sesungguhnya (seperti benar-benar membuat tabel Project baru atau menambah kolom image).
+
+
+### TUGAS 3
+
+1. Jelaskan mengapa kita menggunakan ModelForm pada Django alih-alih membuat form HTML secara manual. Selain itu, jelaskan pula mengapa kita diwajibkan menambahkan {% csrf_token %} pada form tersebut!
+Alasan Menggunakan ModelForm:
+Kita menggunakan ModelForm karena ia menghilangkan beban untuk menulis kode berulang (boilerplate). Alih-alih mendefinisikan ulang setiap kolom isian, tipe data, dan batas karakter di HTML (seperti <input type="text" maxlength="255">), Django akan secara otomatis membaca struktur model Menfess di database dan membangun HTML form yang sesuai. Selain itu, ModelForm juga menyediakan validasi data otomatis. Jika pengguna mengirim pesan tanpa mengisi nama, atau mengunggah file yang bukan gambar, ModelForm akan otomatis memblokir data tersebut agar tidak merusak database, sesuatu yang sangat rumit jika harus diatur secara manual melalui HTML konvensional.
+
+Mengapa wajib ada {% csrf_token %}:
+{% csrf_token %} adalah mekanisme pertahanan utama Django melawan serangan Cross-Site Request Forgery (CSRF). Tanpa token ini, peretas dapat membuat form palsu di website lain dan menipu browser pengguna agar mengirimkan data modifikasi atau penghapusan secara diam-diam ke server kita saat pengguna sedang login. Token ini ibarat "stempel unik" yang hanya diketahui oleh server dan browser pengguna yang sah, memastikan bahwa setiap data POST yang masuk memang benar-benar dikirim dari halaman website kita sendiri.
+
+
+2. Pada Tutorial 03, kita membahas format data JSON dan XML. Mengapa JSON lebih disukai dalam pengembangan aplikasi web modern dibandingkan XML?
+Dalam pengembangan aplikasi web modern, JSON (JavaScript Object Notation) jauh lebih disukai dibandingkan XML (eXtensible Markup Language) karena dua alasan utama: efisiensi ukuran dan kompatibilitas sintaks.
+
+Efisiensi Ukuran dan Keterbacaan: JSON menggunakan struktur Key-Value yang sederhana (menggunakan kurung kurawal dan kurung siku), sehingga ukuran payload datanya jauh lebih ringan. Sebaliknya, XML mengharuskan setiap data dibungkus oleh tag pembuka dan penutup yang panjang (seperti <nama>Cheryl</nama>), yang memboroskan ruang (bandwidth) dan membuat proses pengiriman data antar server menjadi lebih lambat.
+
+Kompatibilitas Langsung dengan JavaScript: Karena sebagian besar frontend modern dibangun dengan JavaScript, JSON dapat langsung dibaca dan diolah sebagai objek native JavaScript menggunakan fungsi JSON.parse() tanpa memerlukan proses parsing yang rumit, menjadikannya standar industri untuk komunikasi API dan arsitektur microservices.
+
+
+3. Jelaskan alur yang terjadi saat kamu menggunakan fungsi view untuk mengembalikan data portofoliomu dalam bentuk JSON. Mengapa kita perlu melakukan proses serialization pada model Django sebelum datanya dikembalikan?
+Alur saat fungsi view dipanggil:
+
+Saat pengguna atau aplikasi (client) meminta URL endpoint (misalnya /json-menfess/), Django akan mengaktifkan fungsi view yang bertugas.
+Fungsi view akan berkomunikasi dengan ORM (Object-Relational Mapping) Django untuk menarik seluruh data objek dari model Menfess di dalam database PostgreSQL.
+Objek-objek data mentah tersebut kemudian dimasukkan ke dalam mesin Serializer Django.
+Data yang sudah diubah formatnya menjadi bentuk struktur string JSON oleh serializer kemudian dibungkus di dalam kelas HttpResponse dengan header application/json dan dikirim kembali ke browser atau aplikasi peminta.
+
+Mengapa butuh proses serialization:
+Kita wajib melakukan proses serialization karena format objek database atau tipe data bawaan Python (seperti objek QuerySet Django atau objek tanggal datetime) tidak dapat dikirimkan secara langsung melalui protokol internet (HTTP). Proses serialization berfungsi sebagai penterjemah yang mengubah struktur kompleks tersebut menjadi format teks standar (JSON) yang dapat dipahami, dikirimkan melalui jaringan internet, dan disusun kembali oleh bahasa pemrograman apa pun yang berada di sisi penerima.
+
+
+### Deklarasi Penggunaan AI (AI Disclosure)
+Dalam pengerjaan Tugas 3 Pemrograman Berbasis Platform (PBP) ini, saya memanfaatkan Generative AI Gemini sebagai mitra diskusi dan asisten pemecahan masalah teknis. Berikut adalah rincian kontribusi AI dalam proses pengembangan:
+
+1. Pemecahan Bug dan Error Debugging
+
+Sistem Template Django: AI membantu menemukan dan menjelaskan penyebab error NoReverseMatch, yang bersumber dari ketiadaan iterasi {% for %} pada pemanggilan URL berparameter ID saat proses rendering data di halaman Menfess.
+
+Penanganan TemplateDoesNotExist: AI membantu mengingatkan kerangka HTML dan attribute yang wajib ada (seperti enctype="multipart/form-data" dan {% csrf_token %}) saat membuat halaman Create dan Edit setelah error hilangnya file template terjadi.
+
+2. Eksplorasi Konsep UI/UX Tingkat Lanjut (Di Luar Silabus Dasar Tugas 3)
+
+Implementasi Modal/Popup Murni CSS: Saya memiliki inisiatif desain UI/UX untuk menggunakan modal popup agar formulir Create, Edit, dan Delete tidak berpindah halaman. Karena AJAX belum diajarkan di Tugas 3, AI membantu saya merancang solusi alternatif yang efektif dengan memadukan ModelForm Django dan pseudo-class CSS :target (tanpa JavaScript) untuk menciptakan ilusi popup yang interaktif.
+
+Integrasi Asset Desain Figma ke HTML/CSS: AI membantu menjelaskan strategi integrasi komponen UI kustom dari Figma, termasuk cara menempatkan SVG menggunakan Flexbox agar presisi di bawah grid layout portofolio, serta menangani masalah CSS background-size: cover versus penggunaan tag <img> yang lebih stabil.
+
+3. Pendalaman Konsep Teoritis
+
+AI membantu mengkurasi dan menguraikan pemahaman teknis terkait peran serialization, efisiensi JSON dibandingkan XML, serta fungsi keamanan dasar {% csrf_token %} sebagai referensi dalam penulisan jawaban di README.
+
+Seluruh baris kode (terutama arsitektur model dan views), tata letak struktur layout, desain aset visual, serta penyusunan logika utama tetap merupakan karya orisinal dan arahan mandiri saya. AI murni berfungsi sebagai alat verifikasi, troubleshooter, dan fasilitator implementasi teknis.

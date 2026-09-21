@@ -700,6 +700,59 @@ main {
     background: var(--ink);
 }
 
+.modal-css {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 1000;
+}
+
+.modal-css:target {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.close-css {
+    position: absolute;
+    top: 15px; right: 20px;
+    text-decoration: none;
+    font-size: 24px;
+    color: #555;
+    font-weight: bold;
+}
+.close-css:hover { color: red; }
+
+.btn-menfess-img {
+    width: 80%; 
+    height: auto; /* Biarkan tingginya menyesuaikan otomatis tanpa gepeng */
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.btn-menfess-link {
+    display: inline-block;
+}
+
+.btn-menfess-link:hover .btn-menfess-img {
+    transform: scale(1.05) translateY(-3px);
+    filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.2)); /* Efek bayangan saat disorot */
+}
+
 @media (max-width: 600px) {
     .hero-grid {
         grid-template-columns: 1fr;
