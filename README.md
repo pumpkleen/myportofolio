@@ -91,3 +91,5 @@ Dalam pengerjaan tugas ini, saya menggunakan bantuan AI (Gemini) untuk beberapa 
 Debugging CSS: AI membantu saya menemukan bug pada tata letak kartu proyek saya yang melebar, dengan menyarankan penggunaan `grid-template-columns: repeat(auto-fill, 300px)murni tanpa gabungan flexbox.
 Pemahaman Konsep: Saya meminta bantuan AI untuk menjelaskan cara kerja Django Admin dan bagaimana menggunakannya untuk mengatur hak akses grup Editor tanpa harus melakukan hard-coding di views.py.
 Troubleshooting API: AI membantu saya menemukan kesalahan routing path URL ketika saya mencoba mengakses endpoint JSON, serta memastikan implementasi `use_natural_foreign_keys=True` sudah benar agar ID database tidak bocor.
+
+bugs

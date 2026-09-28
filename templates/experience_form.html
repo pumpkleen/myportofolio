@@ -7,8 +7,7 @@
         <section class="experience-section">
             <div class="container">
                 <h1>Add New Experience</h1>
-                <form method="post"
-                      action="{% url 'main:create_experience' %}"
+                <form method="POST" enctype="multipart/form-data">
                       class="project-form">
                     {% csrf_token %}
                     {% for field in form %}
