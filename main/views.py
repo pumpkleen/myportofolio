@@ -31,10 +31,27 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
-def show_experience(request):
+def show_experience(request):    
+    json_response = get_experiences_json(request)
+
+    # Kembalikan JSON jadi object Python
+    experiences = serializers.deserialize(
+        "json",
+        json_response.content.decode("utf-8"),
+    )
+    experiences = [exp.object for exp in experiences]
+    
+    title_query = request.GET.get("title", "").strip()
+
+    is_editor = False
+    if request.user.is_authenticated:
+        is_editor = request.user.groups.filter(name='Editor').exists()
+
     context = {
         "name": "Mahi",
-        "experience_list": Experience.objects.all(),
+        "experience_list": experiences,
+        'is_editor': is_editor,
+        "title_query": title_query,
     }
     return render(request, "experience.html", context)
 
@@ -47,6 +64,9 @@ def show_projects(request):
     )
     projects = [project.object for project in projects]
     title_query = request.GET.get("title", "").strip()
+
+    if title_query:
+        projects = [project for project in projects if title_query.lower() in project.title.lower()]
 
     is_editor = False
     if request.user.is_authenticated:
@@ -91,6 +111,19 @@ def get_projects_json(request):
     projects_json = serializers.serialize("json", projects, use_natural_foreign_keys=True)
     return HttpResponse(projects_json, content_type="application/json")
 
+def get_experience_json(request):
+    experiences = Experience.objects.all()
+    return HttpResponse(serializers.serialize("json", experiences), content_type="application/json")
+
+def get_experiences_json(request):
+    title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.all()
+
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
+
+    experiences_json = serializers.serialize("json", experiences, use_natural_foreign_keys=True)
+    return HttpResponse(experiences_json, content_type="application/json")
 
 @login_required(login_url="/login/")  # Tambahkan baris ini
 def delete_project(request, project_id):
