@@ -39,8 +39,8 @@
                     
                     <!-- Sisi Teks -->
                     <div class="exp-text">
-                        <h2 class="exp-company">{{ experience.get_category_display }}</h2>
-                        <h3 class="exp-role">{{ experience.title }}</h3>
+                        <h2 class="exp-company">{{experience.title}}</h2>
+                        <h3 class="exp-role">{{ experience.description }}</h3>
                         
                         <p class="exp-desc" style="margin-bottom: 15px;">
                             {% if experience.is_ongoing %}
@@ -50,7 +50,7 @@
                             {% endif %}
                         </p>
                         
-                        <p class="exp-desc">{{ experience.description }}</p>
+                        <p class="exp-desc">{{ experience.get_category_display }}</p>
                         
                         {% if user.is_superuser or is_editor %}
                             <div class="exp-actions">
