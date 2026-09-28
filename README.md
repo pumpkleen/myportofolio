@@ -82,3 +82,12 @@ Integrasi Asset Desain Figma ke HTML/CSS: AI membantu menjelaskan strategi integ
 AI membantu mengkurasi dan menguraikan pemahaman teknis terkait peran serialization, efisiensi JSON dibandingkan XML, serta fungsi keamanan dasar {% csrf_token %} sebagai referensi dalam penulisan jawaban di README.
 
 Seluruh baris kode (terutama arsitektur model dan views), tata letak struktur layout, desain aset visual, serta penyusunan logika utama tetap merupakan karya orisinal dan arahan mandiri saya. AI murni berfungsi sebagai alat verifikasi, troubleshooter, dan fasilitator implementasi teknis.
+
+
+### TUGAS 4
+
+## Deklarasi Penggunaan AI (AI Disclosure)
+Dalam pengerjaan tugas ini, saya menggunakan bantuan AI (Gemini) untuk beberapa hal spesifik:
+Debugging CSS: AI membantu saya menemukan bug pada tata letak kartu proyek saya yang melebar, dengan menyarankan penggunaan `grid-template-columns: repeat(auto-fill, 300px)murni tanpa gabungan flexbox.
+Pemahaman Konsep: Saya meminta bantuan AI untuk menjelaskan cara kerja Django Admin dan bagaimana menggunakannya untuk mengatur hak akses grup Editor tanpa harus melakukan hard-coding di views.py.
+Troubleshooting API: AI membantu saya menemukan kesalahan routing path URL ketika saya mencoba mengakses endpoint JSON, serta memastikan implementasi `use_natural_foreign_keys=True` sudah benar agar ID database tidak bocor.

@@ -8,7 +8,7 @@ from main.views import (show_main,
                         edit_menfess, delete_menfess, 
                         show_json_menfess, register, 
                         login_user, logout_user,
-                        toggle_star,
+                        toggle_star, edit_project,
                         )
 
 app_name = "main"
@@ -32,5 +32,6 @@ urlpatterns = [
     "projects/<uuid:project_id>/star/",
     toggle_star,
     name="toggle_star",
-),
+    ),
+    path('projects/<uuid:id>/edit/', edit_project, name='edit_project'),
 ]

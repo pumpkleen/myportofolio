@@ -48,9 +48,14 @@ def show_projects(request):
     projects = [project.object for project in projects]
     title_query = request.GET.get("title", "").strip()
 
+    is_editor = False
+    if request.user.is_authenticated:
+        is_editor = request.user.groups.filter(name='Editor').exists()
+
     context = {
         "name": "Mahi",
         "project_list": projects,
+        'is_editor': is_editor,
         "title_query": title_query,
     }
     return render(request, "projects.html", context)
@@ -209,3 +214,21 @@ def toggle_star(request, project_id):
             project.starred_by.add(request.user)
 
     return redirect("main:show_projects")
+
+@login_required(login_url="/login/")
+def edit_project(request, id):
+    project = get_object_or_404(Project, pk=id)
+    
+    is_editor = request.user.groups.filter(name='Editor').exists()
+    
+    if not (request.user.is_superuser or is_editor):
+        raise PermissionDenied
+    
+    form = ProjectForm(request.POST or None, instance=project)
+    
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect('main:show_projects')
+        
+    context = {'form': form, 'project': project}
+    return render(request, "edit_project.html", context)
