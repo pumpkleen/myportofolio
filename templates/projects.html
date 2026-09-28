@@ -1,55 +1,96 @@
 {% extends "base.html" %}
+
 {% block meta %}
     <title>Projects - {{ name }}</title>
 {% endblock meta %}
+
 {% block content %}
-    <main>
-        <section class="experience-section">
-            <div class="container">
-                <p class="section-kicker">Karsa tercipta</p>
-                    <h1>Project</h1>
-                    {% if user.is_superuser %}
-                        <a href="{% url 'main:create_project' %}"
-                            class="button project-add-button">
-                                <span aria-hidden="true">+</span>
-                            Tambah Proyek
-                        </a>
-                        {% endif %}
-                            <form method="get"
-                            action="{% url 'main:show_projects' %}"
-                            class="project-search">
-                            <input type="search"
-                                name="title"
-                                value="{{ title_query }}"
-                                placeholder="Cari berdasarkan nama proyek"
-                                class="project-search__input"
-                                aria-label="Cari berdasarkan nama proyek">
-                            <button type="submit" class="button">Cari</button>
-                        </form>
-                    <div class="project-grid">
-                        {% for project in project_list %}
-                        <details class="project-card">
-                            <summary>
-                                <h2>{{ project.title }}</h2>
-                                {% if project.image %}
-                                    <img src="{{ project.image }}" alt="{{ project.title }}" class="project-image">
-                                {% endif %}
-                                <a class="project-link" href="{{ project.link }}"target=”_blank>Visit Site</a>
-                                {% include "components/project_star.html" with project=project %}
-                            </summary>
-                                <p>{{ project.description }}</p>
-                                {% if user.is_superuser %}
-                                    {% include "components/project_delete_modal.html" with project=project %}
-                                {% endif %}
-                                {% if user.is_superuser or is_editor %}
-                                    <a href="{% url 'main:edit_project' project.id %}" class="button">Edit</a>
-                                {% endif %}
-                        </details>
-                        {% empty %}
-                            <p class="empty-state">Belum ada proyek yang ditambahkan.</p>
-                        {% endfor %}
-                    </div>
+<main>
+    <section id="projects">
+        
+        <!-- BAGIAN HEADER ATAS Y2K -->
+        <div class="proj-header-section">
+            <h1 class="proj-title-y2k">Project</h1>
+            
+            <!-- Kolom Pencarian -->
+            <div class="exp-search-wrapper">
+                <form method="get" action="{% url 'main:show_projects' %}" class="exp-search-bar">
+                    <input type="search" name="title" value="{{ title_query }}" placeholder="Cari berdasarkan nama proyek" aria-label="Cari berdasarkan nama proyek" style="border:none; background:transparent; flex:1; font-size:1.2rem; outline:none; color:#111;">
+                    <button type="submit" class="exp-search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </form>
             </div>
-        </section>
-    </main>
+            
+            <!-- Tambah Proyek -->
+            <p class="exp-add-link">
+                {% if user.is_superuser %}
+                    <a href="{% url 'main:create_project' %}">or add new Project</a>
+                {% else %}
+                    <span style="text-decoration: line-through; color: gray;" title="Hanya Admin yang bisa menambah proyek">or add new Project</span>
+                {% endif %} 
+            </p>
+        </div>
+
+        <!-- CONTAINER DAFTAR PROJECT -->
+        <div class="proj-container">
+            {% for project in project_list %}
+            <div class="proj-item">
+                <div class="proj-content">
+                    
+                    <!-- Sisi Teks -->
+                    <div class="proj-text">
+                        <h2 class="proj-name">{{ project.title }}</h2>
+                        
+                        <!-- Baris Tombol Action (Visit, Star) -->
+                        <div class="proj-actions">
+                            {% if project.link %}
+                                <a href="{{ project.link }}" target="_blank" class="btn-proj">Visit Site</a>
+                            {% endif %}
+                            
+                            <!-- Komponen Star -->
+                            {% include "components/project_star.html" with project=project %}
+                        </div>
+
+                        <p class="proj-desc">{{ project.description }}</p>
+                        
+                        <!-- Tombol Hak Akses (Edit & Delete) -->
+                        {% if user.is_superuser or is_editor %}
+                        <div class="proj-actions" style="margin-top: 20px;">
+                            <!-- Tombol Edit untuk Admin & Editor -->
+                            <a href="{% url 'main:edit_project' project.id %}" class="btn-neon">Edit</a>
+                            
+                            <!-- Tombol Delete KHUSUS Admin (Superuser) -->
+                            {% if user.is_superuser %}
+                            <a href="{% url 'main:delete_project' project.id %}" class="btn-neon" style="background-color: #ff3b3b; color: white; margin-left: 10px;">Delete</a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Sisi Gambar -->
+                    <div class="proj-visual">
+                        <!-- Menampilkan gambar asli jika ada, jika tidak pakai placeholder retro -->
+                        {% if project.image %}
+                            <img src="{{ project.image }}" alt="{{ project.title }}" class="proj-main-img">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1555099962-4199c345e5dd?q=80&w=600&h=400&auto=format&fit=crop" alt="Project Image" class="proj-main-img">
+                        {% endif %}
+                    </div>
+
+                </div>
+
+                <!-- Pembatas Papan Catur -->
+                <div class="checkerboard-divider"></div>
+            </div>
+            
+            {% empty %}
+            <p style="text-align: center; padding: 40px; font-family: monospace;">
+                Belum ada proyek yang ditambahkan.
+            </p>
+            {% endfor %}
+        </div>
+        
+    </section>
+</main>
 {% endblock content %}

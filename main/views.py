@@ -6,12 +6,12 @@ from django.core import serializers
 from django.http import HttpResponse
 from main.forms import ProjectForm
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 
 from main.models import Experience, Project
 from .models import Menfess
-from .forms import MenfessForm
+from .forms import MenfessForm, ExperienceForm
 import datetime
 
 def show_main(request):
@@ -232,3 +232,32 @@ def edit_project(request, id):
         
     context = {'form': form, 'project': project}
     return render(request, "edit_project.html", context)
+
+def check_admin_or_editor(user):
+    return user.is_superuser or user.groups.filter(name='Editor').exists()
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser) # Hanya admin yang bisa nambah
+def create_experience(request):
+    form = ExperienceForm(request.POST or None, request.FILES or None)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect('main:show_experience')
+    return render(request, "experience_form.html", {'form': form})
+
+@login_required
+@user_passes_test(check_admin_or_editor) # Admin & Editor bisa edit
+def edit_experience(request, id):
+    experience = get_object_or_404(Experience, pk=id)
+    form = ExperienceForm(request.POST or None, request.FILES or None, instance=experience)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect('main:show_experience')
+    return render(request, "experience_form.html", {'form': form})
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser) # Hanya admin yang bisa hapus
+def delete_experience(request, id):
+    experience = get_object_or_404(Experience, pk=id)
+    experience.delete()
+    return redirect('main:show_experience')

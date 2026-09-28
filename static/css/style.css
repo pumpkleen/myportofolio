@@ -527,6 +527,7 @@ main {
 .experience-section {
     padding: 4rem 0;
     border-top: 1px solid var(--line);
+    color: var(--accent-dark);
 }
 
 .section-kicker {
@@ -563,13 +564,6 @@ main {
     margin-top: 1rem;
     font-size: 0.85rem;
     font-weight: 600;
-}
-
-.project-grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 300px);
-    gap: 1.5rem;    
-    justify-content: start;
 }
 
 .project-card{
@@ -655,10 +649,12 @@ main {
     display: block;
     margin-bottom: 0.4rem;
     font-weight: 700;
+    color: var(--accent-dark);
 }
 
 .form-group input,
 .form-group textarea {
+    background-color: var(--ink);
     width: 100%;
     box-sizing: border-box;
     padding: 0.7rem;
@@ -775,7 +771,444 @@ main {
     font-size: 0.8rem;
 }
 
+/* --- TAMPILAN EXPERIENCE Y2K STYLE --- */
+.exp-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Courier New', Courier, monospace; /* Font ala retro/coding */
+}
+
+.exp-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.exp-content {
+    display: flex;
+    width: 100%;
+    min-height: 350px;
+}
+
+/* Bikin layout selang-seling (Genap: Gambar di kiri, Teks di kanan) */
+.exp-item:nth-child(even) .exp-content {
+    flex-direction: row-reverse;
+}
+
+/* --- BAGIAN TEKS --- */
+.exp-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Warna background selang-seling */
+.exp-item:nth-child(odd) .exp-text {
+    background-color: #3b5cff; /* Biru terang */
+}
+.exp-item:nth-child(even) .exp-text {
+    background-color: #111111; /* Hitam pekat */
+}
+
+/* Tipografi Teks */
+.exp-company {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 3.5rem;
+    color: white;
+    text-transform: uppercase;
+    margin: 0 0 10px 0;
+    line-height: 1;
+}
+
+.exp-role {
+    color: #d4ff00; /* Kuning/Hijau Neon */
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.exp-desc {
+    color: #d4ff00;
+    font-size: 1rem;
+    margin: 5px 0;
+    max-width: 80%;
+}
+
+/* --- BAGIAN GAMBAR --- */
+.exp-visual {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+}
+
+.exp-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-grow: 1;
+}
+
+.exp-thumbnails {
+    display: flex;
+    height: 80px;
+    background-color: #000;
+    padding: 5px;
+    gap: 5px;
+}
+
+.exp-thumbnails img {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 2px solid transparent;
+}
+
+.exp-thumbnails img.active {
+    border-color: #d4ff00; /* Highlight neon */
+}
+
+/* --- PEMBATAS PAPAN CATUR (CHECKERBOARD) --- */
+.checkerboard-divider {
+    width: 100%;
+    height: 40px;
+    background-color: #d4ff00;
+    background-image: 
+        linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111),
+        linear-gradient(45deg, #111 25%, transparent 25%, transparent 75%, #111 75%, #111);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+}
+
+/* --- TOMBOL NEON --- */
+.exp-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-neon {
+    background-color: #d4ff00;
+    color: #111;
+    border: none;
+    padding: 8px 25px;
+    font-family: inherit;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 20px; /* Bentuk pil */
+    cursor: pointer;
+    text-decoration: none;
+}
+.btn-neon:hover {
+    background-color: white;
+}
+
+/* --- HEADER EXPERIENCE Y2K --- */
+.exp-header-section {
+    text-align: center;
+    padding: 40px 20px 20px 20px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.exp-title-y2k {
+    font-family: "Gasoek One", -apple-system, sans-serif;
+    font-size: 6rem;
+    color: #d4ff00; /* Kuning neon */
+    -webkit-text-stroke: 4px #111; /* Garis tepi hitam */
+    text-shadow: 6px 6px 0 #111; /* Bayangan tebal */
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+.exp-search-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.exp-search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #d4ff00;
+    border: 3px solid #111;
+    border-radius: 40px;
+    padding: 5px 5px 5px 20px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.exp-search-bar input {
+    border: none;
+    background: transparent;
+    flex: 1;
+    font-size: 1.2rem;
+    outline: none;
+    color: #111;
+}
+
+.exp-search-btn {
+    background-color: #e83e8c; /* Pink neon */
+    border: 2px solid #111;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.exp-add-link {
+    color: #e83e8c;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.exp-add-link a {
+    color: #e83e8c;
+    text-decoration: underline;
+}
+
+/* --- TAMPILAN PROJECT Y2K STYLE --- */
+.proj-header-section {
+    text-align: center;
+    padding: 40px 20px 20px 20px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* Judul Utama "Project" */
+.proj-title-y2k {
+    font-family: "Gasoek One", -apple-system, sans-serif;
+    font-size: 6rem;
+    color: #d4ff00; /* Kuning neon */
+    -webkit-text-stroke: 4px #111; 
+    text-shadow: 6px 6px 0 #111; 
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+/* Layout Kontainer & Item */
+.proj-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.proj-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.proj-content {
+    display: flex;
+    width: 100%;
+    min-height: 350px;
+}
+
+/* Layout Selang-Seling */
+.proj-item:nth-child(even) .proj-content {
+    flex-direction: row-reverse;
+}
+
+/* Sisi Teks */
+.proj-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Warna Selang-Seling Background & Teks */
+.proj-item:nth-child(odd) .proj-text {
+    background-color: #f48fb1; /* Pink retro */
+    color: #111;
+}
+.proj-item:nth-child(even) .proj-text {
+    background-color: #111111; /* Hitam */
+    color: #f48fb1; /* Teks pink di background hitam */
+}
+
+/* Tipografi di dalam Kartu Project */
+.proj-name {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 3.8rem;
+    color: white;
+    text-transform: uppercase;
+    line-height: 1;
+    margin: 0 0 15px 0;
+}
+
+.proj-desc {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 15px 0;
+    max-width: 85%;
+}
+
+/* Tombol-Tombol Action */
+.proj-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-proj {
+    background-color: #d4ff00; /* Kuning neon */
+    color: #e83e8c; /* Teks pink */
+    border: none;
+    padding: 6px 18px;
+    font-family: inherit;
+    font-weight: bold;
+    border-radius: 20px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.btn-proj:hover {
+    background-color: white;
+}
+
+/* Sisi Gambar (Sama seperti Experience) */
+.proj-visual {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+}
+
+.proj-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    flex-grow: 1;
+}
+
+.proj-visual, .exp-visual {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    min-height: 0; /* Mencegah elemen membesar melebihi wadahnya */
+}
+
+.proj-main-img, .exp-main-img {
+    width: 100%;
+    height: 0; /* Abaikan tinggi asli gambar bawaan */
+    flex-grow: 1; /* Suruh gambar mengisi penuh sisa ruang dari tinggi teks! */
+    object-fit: cover;
+}
+
+.proj-container, .exp-container {
+    width: 100%;
+    max-width: 100%; /* Menghapus batas 1000px yang sebelumnya */
+    margin: 0;
+    padding: 0;
+}
+
+/* Memastikan section utamanya tidak terhalang padding bawaan base.html */
+#projects, #experience {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow-x: hidden; /* Mencegah munculnya scrollbar horizontal */
+}
+
+/* =========================================
+   MENFESS MASONRY Y2K
+   ========================================= */
+
+.menfess-section {
+    padding: 40px 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.menfess-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* Trik Masonry CSS Murni */
+.menfess-masonry {
+    column-count: 3; /* Tiga kolom berjajar */
+    column-gap: 20px; /* Jarak antar kolom */
+}
+
+/* Kotak Pesan */
+.menfess-card {
+    break-inside: avoid; /* Biar kotak gak kepotong setengah di antar kolom */
+    page-break-inside: avoid;
+    margin-bottom: 20px; /* Jarak vertikal bawah */
+    padding: 20px;
+    border-radius: 15px;
+    font-family: 'Courier New', Courier, monospace;
+    display: inline-block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.menfess-card h3 {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.menfess-card p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+    white-space: pre-wrap; /* Biar enter/baris baru dari user tetep terbaca */
+}
+
+/* --- WARNA SELANG-SELING OTOMATIS --- */
+
+/* 1. Pink (Teks Putih) */
+.menfess-card:nth-child(3n+1) {
+    background-color: #d84888;
+    color: white;
+}
+.menfess-card:nth-child(3n+1) h3 { color: white; }
+
+/* 2. Lime / Kuning (Teks Biru) */
+.menfess-card:nth-child(3n+2) {
+    background-color: #c9f24d;
+    color: #3b5cff; 
+}
+.menfess-card:nth-child(3n+2) h3 { color: #3b5cff; }
+
+/* 3. Biru (Teks Putih) */
+.menfess-card:nth-child(3n+3) {
+    background-color: #3b5cff;
+    color: white;
+}
+.menfess-card:nth-child(3n+3) h3 { color: white; }
+
+/* --- RESPONSIVE UNTUK HP & TABLET --- */
+@media (max-width: 900px) {
+    .menfess-masonry { column-count: 2; }
+}
+
 @media (max-width: 600px) {
+    .menfess-masonry { column-count: 1; }
     .hero-grid {
         grid-template-columns: 1fr;
         grid-template-areas:
