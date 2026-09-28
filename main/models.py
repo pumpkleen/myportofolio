@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 import uuid
@@ -34,6 +35,10 @@ class Project(models.Model):
     description = models.TextField()
     link = models.URLField(blank=True, null=True)
     image = models.URLField(blank=True, null=True)
+
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_projects", blank=True
+    )
 
     def __str__(self):
         return self.title

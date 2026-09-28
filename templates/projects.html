@@ -8,11 +8,13 @@
             <div class="container">
                 <p class="section-kicker">Karsa tercipta</p>
                     <h1>Project</h1>
+                    {% if user.is_superuser %}
                         <a href="{% url 'main:create_project' %}"
                             class="button project-add-button">
                                 <span aria-hidden="true">+</span>
                             Tambah Proyek
                         </a>
+                        {% endif %}
                             <form method="get"
                             action="{% url 'main:show_projects' %}"
                             class="project-search">
@@ -33,9 +35,12 @@
                                     <img src="{{ project.image }}" alt="{{ project.title }}" class="project-image">
                                 {% endif %}
                                 <a class="project-link" href="{{ project.link }}"target=”_blank>Visit Site</a>
+                                {% include "components/project_star.html" with project=project %}
                             </summary>
                                 <p>{{ project.description }}</p>
-                                {% include "components/project_delete_modal.html" with project=project %}
+                                {% if user.is_superuser %}
+                                    {% include "components/project_delete_modal.html" with project=project %}
+                                {% endif %}
                         </details>
                         {% empty %}
                             <p class="empty-state">Belum ada proyek yang ditambahkan.</p>

@@ -22,6 +22,13 @@
                 <a href="{% url 'main:show_experience' %}">Experience</a>
                 <a href="{% url 'main:show_projects' %}">Project</a>
                 <a href="{% url 'main:show_menfess' %}">Kirim Pesan</a>
+                {% if user.is_authenticated %}
+                    <a href="">{{ user.username }}</a>
+                    <a href="{% url 'main:logout' %}">Logout</a>
+                {% else %}
+                    <a href="{% url 'main:login' %}">Login</a>
+                    <a href="{% url 'main:register' %}">Register</a>
+                {% endif %}
             </nav>
         </div>
     </header>
