@@ -9,6 +9,8 @@ from main.views import (show_main,
                         show_json_menfess, register, 
                         login_user, logout_user,
                         toggle_star, edit_project,
+                        create_experience, edit_experience,
+                        delete_experience
                         )
 
 app_name = "main"
@@ -34,4 +36,7 @@ urlpatterns = [
     name="toggle_star",
     ),
     path('projects/<uuid:id>/edit/', edit_project, name='edit_project'),
+    path('create-experience/', create_experience, name='create_experience'),
+    path('edit-experience/<uuid:id>/', edit_experience, name='edit_experience'), 
+    path('delete-experience/<uuid:id>/', delete_experience, name='delete_experience'),
 ]

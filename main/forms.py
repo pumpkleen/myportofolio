@@ -1,6 +1,7 @@
-from django.forms import ModelForm, TextInput, Textarea, URLInput
+from django import forms
+from django.forms import ModelForm, TextInput, Textarea, URLInput, DateInput, Select
 
-from main.models import Project, Menfess
+from main.models import Project, Menfess, Experience
 
 class ProjectForm(ModelForm):
     class Meta:
@@ -34,12 +35,74 @@ class ProjectForm(ModelForm):
             ),
             "link": URLInput(
                 attrs={
-                    "placeholder": "https://mir4na.itch.io/where-do-you-belong",
+                    "placeholder": "masukkan URL proyekmu",
                 }
             ),
             "image": URLInput(
                 attrs={
-                    "placeholder": "https://drive.google.com/thumbnail?id=1NOtJJOOoPDyvS-uT9z2Q6T0GBPsldz2-&sz=w1000",
+                    "placeholder": "masukkan URL gambar proyekmu",
+                }
+            ),
+        }
+
+class ExperienceForm(ModelForm):
+    started_at = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "month"}),
+        input_formats=['%Y-%m'],
+        required=False,
+        label="Bulan Mulai"
+    )
+    ended_at = forms.DateField(
+        widget=forms.DateInput(
+            attrs={
+                "type": "month", 
+                "title": "Kosongkan jika masih berlangsung"
+            }
+        ),
+        input_formats=['%Y-%m'],
+        required=False,
+        label="Bulan Selesai"
+    )
+
+    class Meta:
+        model = Experience
+        fields = [
+            "title",
+            "category",
+            "description",
+            "thumbnail",
+            "started_at",
+            "ended_at",
+        ]
+
+        labels = {
+            "title": "Nama Pengalaman / Posisi",
+            "category": "Kategori",
+            "description": "Deskripsi",
+            "thumbnail": "URL Thumbnail (Opsional)",
+        }
+
+        widgets = {
+            "title": TextInput(
+                attrs={
+                    "placeholder": "Contoh: Teaching Assistant of Discrete Mathematics",
+                    "maxlength": 255,
+                }
+            ),
+            "category": Select(
+                attrs={
+                    "style": "padding: 5px; border-radius: 5px;"
+                }
+            ),
+            "description": Textarea(
+                attrs={
+                    "placeholder": "Ceritakan tugas dan pengalamanmu...",
+                    "rows": 3,
+                }
+            ),
+            "thumbnail": URLInput(
+                attrs={
+                    "placeholder": "https://link-ke-gambar-kamu.com/image.png",
                 }
             ),
         }

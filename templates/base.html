@@ -18,7 +18,7 @@
                 <img src="/static/img/Cuking.svg">
             </a>
             <nav>
-                <a href="{% url 'main:show_main' %}" class="active">Profile</a>
+                <a href="{% url 'main:show_main' %}">Profile</a>
                 <a href="{% url 'main:show_experience' %}">Experience</a>
                 <a href="{% url 'main:show_projects' %}">Project</a>
                 <a href="{% url 'main:show_menfess' %}">Kirim Pesan</a>
@@ -30,6 +30,25 @@
                     <a href="{% url 'main:register' %}">Register</a>
                 {% endif %}
             </nav>
+            {% if messages %}
+    <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 9999;">
+        {% for message in messages %}
+            <div class="toast-message" style="background-color: #d4ff00; color: #111; padding: 10px 20px; margin-bottom: 10px; border: 2px solid #111; font-family: monospace; font-weight: bold; transition: opacity 0.5s ease;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        setTimeout(function() {
+            const toast = document.getElementById('toast-container');
+            if (toast) {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }
+        }, 1800); // 3000 milidetik = 3 detik
+    </script>
+{% endif %}
         </div>
     </header>
     {% block content %} {% endblock content %}
@@ -40,4 +59,18 @@
         </div>
     </footer>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        const currentPath = window.location.pathname;
+        
+        const navLinks = document.querySelectorAll("nav a");
+        
+        navLinks.forEach(link => {
+            if (link.getAttribute("href") === currentPath) {
+                link.classList.add("active");
+            }
+        });
+    });
+</script>
 </html>

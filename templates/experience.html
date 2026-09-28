@@ -1,66 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "base.html" %}
+
+{% block meta %}
     <title>Experience - {{ name }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <a href="{% url 'main:show_main' %}" class="brand">
-                <img src="/static/img/Cuking.svg">
-            </a>
-            <nav>
-                <a href="{% url 'main:show_main' %}">Profile</a>
-                <a href="{% url 'main:show_experience' %}" class="active">Experience</a>
-                <a href="{% url 'main:show_projects' %}">Project</a>
-            </nav>
-        </div>
-    </header>
+{% endblock meta %}
 
-    <main>
+{% block content %}
+<main>
     <section class="experience-section" id="experience">
-        <div class="container">
-            <p class="section-kicker">Perjalanan saya sejauh ini</p>
-            <h1>Experience</h1>
-
-            <div class="experience-grid">
-                {% for experience in experience_list %}
-                    <article class="experience-card">
-                        <span class="experience-category">
-                            {{ experience.get_category_display }}
-                        </span>
-                        <h2>{{ experience.title }}</h2>
-                        <p class="experience-description">
-                            {{ experience.description }}
-                        </p>
-
-                        {% if experience.is_ongoing %}
-                            <p class="experience-status">Sedang berlangsung</p>
-                        {% else %}
-                            <p class="experience-status">Selesai</p>
-                        {% endif %}
-                    </article>
-                {% empty %}
-                    <p class="empty-state">
-                        Belum ada pengalaman yang ditambahkan.
-                    </p>
-                {% endfor %}
+        
+        <!-- BAGIAN HEADER ATAS Y2K -->
+        <div class="exp-header-section">
+            <h1 class="proj-title-y2k">Experience</h1>
+            
+            <div class="exp-search-wrapper">
+                <form class="exp-search-bar" method="GET" action="">
+                    <input type="text" name="q" placeholder="Cari pengalaman...">
+                    <button type="submit" class="exp-search-btn">
+                        <!-- Icon Search Kaca Pembesar -->
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </form>
             </div>
+            
+            <p class="exp-add-link">
+                {% if user.is_superuser %}
+                    <a href="{% url 'main:create_experience' %}">or add new Experience</a>
+                {% else %}
+                    <span style="text-decoration: line-through; color: gray;">or add new Experience</span>
+                {% endif %}
+            </p>
         </div>
+
+        <!-- CONTAINER DAFTAR EXPERIENCE -->
+        <div class="exp-container">
+            {% for experience in experience_list %}
+            <div class="exp-item">
+                <div class="exp-content">
+                    
+                    <!-- Sisi Teks -->
+                    <div class="exp-text">
+                        <h2 class="exp-company">{{ experience.get_category_display }}</h2>
+                        <h3 class="exp-role">{{ experience.title }}</h3>
+                        
+                        <p class="exp-desc" style="margin-bottom: 15px;">
+                            {% if experience.is_ongoing %}
+                                Sedang berlangsung - Sekarang
+                            {% else %}
+                                Selesai
+                            {% endif %}
+                        </p>
+                        
+                        <p class="exp-desc">{{ experience.description }}</p>
+                        
+                        {% if user.is_superuser or is_editor %}
+                            <div class="exp-actions">
+                                <a href="{% url 'main:edit_experience' experience.id %}" class="btn-neon">Edit</a>
+                                {% if user.is_superuser %}
+                                <a href="{% url 'main:delete_experience' experience.id %}" class="btn-neon" style="background-color: #ff3b3b; color: white;">Delete</a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                    </div>
+
+                    <!-- Sisi Gambar -->
+                    <div class="exp-visual">
+                        {{ experience.image.url }}
+                    </div>
+
+                </div>
+
+                <!-- Pembatas Papan Catur -->
+                <div class="checkerboard-divider"></div>
+            </div>
+            
+            {% empty %}
+            <p class="empty-state" style="text-align: center; padding: 40px;">
+                Belum ada pengalaman yang ditambahkan.
+            </p>
+            {% endfor %}
+        </div>
+        
     </section>
 </main>
-
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia.</p>
-        </div>
-    </footer>
-</body>
-</html>
-
+{% endblock content %}

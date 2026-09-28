@@ -1,91 +1,82 @@
 {% extends 'base.html' %}
 
+{% block meta %}
+    <title>Message Me! - {{ name }}</title>
+{% endblock meta %}
+
 {% block content %}
-<div class="menfess-container">
-    <h2>Papan Menfess</h2>
-    <p>Tinggalkan pesan rahasia atau sapaan untukku di sini!</p>
-    
-    <!-- Tombol pemicu Modal Create -->
-    <a href="#modal-create" class="btn-primary">Tulis Menfess Baru</a>
-
-    <!-- 1. MODAL CREATE -->
-    <div id="modal-create" class="modal-css">
-        <div class="modal-content">
-            <a href="#" class="close-css" title="Tutup">&times;</a>
-            <h2>Kirim Menfess Baru</h2>
-            <form action="{% url 'main:create_menfess' %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn-primary">Kirim!</button>
-            </form>
+<main>
+    <section class="menfess-section">
+        
+        <!-- HEADER MESSAGE ME -->
+        <div class="menfess-header">
+            <h1 class="exp-title-y2k" style="font-size: 5.5rem;">Message Me!</h1>
+            
+            <p class="exp-add-link">
+                <!-- Tombol pemicu Modal Create -->
+                <a href="#modal-create" style="text-decoration: none;">write a message</a>
+            </p>
         </div>
-    </div>
 
-    <!-- DAFTAR MENFESS -->
-    <div class="menfess-list">
-        {% for menfess in menfess_entries %}
-            <div class="menfess-card">
-                <h3>Dari: {{ menfess.sender }}</h3>
-                <p>{{ menfess.message }}</p>
-                {% if menfess.image %}
-                    <img src="{{ menfess.image.url }}" alt="Gambar Menfess" style="max-width: 200px; border-radius: 8px;">
+        <!-- 1. MODAL CREATE -->
+        <div id="modal-create" class="modal-css">
+            <div class="modal-content" style="color: black; font-family: 'Courier New', monospace;">
+                <a href="#" class="close-css" title="Tutup">&times;</a>
+                <h2 style="font-family: 'Impact', sans-serif; letter-spacing: 1px;">Kirim Menfess Baru</h2>
+                <form action="{% url 'main:create_menfess' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" style="background-color: #d4ff00; color: #111; font-weight: bold; padding: 8px 16px; border: 2px solid #111; cursor: pointer;">Kirim!</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- MASONRY GRID UNTUK KOTAK PESAN -->
+        <div class="menfess-masonry">
+            {% for menfess in menfess_entries %}
+                <div class="menfess-card">
+                    <h3>From: {{ menfess.sender }}</h3>
+                    <p>{{ menfess.message }}</p>
+                    
+                    {% if menfess.image %}
+                        <img src="{{ menfess.image.url }}" alt="Gambar Menfess" style="max-width: 100%; border-radius: 8px; margin-top: 15px;">
+                    {% endif %}
+                    
+                    <!-- Tombol Delete Khusus Superuser & Editor -->
+                    {% if user.is_superuser or is_editor %}
+                    <div style="margin-top: 15px; text-align: right;">
+                        <a href="#modal-delete-{{ menfess.id }}" 
+                           style="display: inline-block; background-color: #111; color: #fff; padding: 4px 12px; text-decoration: none; border-radius: 5px; font-size: 0.85rem; font-family: Arial, sans-serif;">
+                            Delete
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- 2. MODAL DELETE (Hanya dirender untuk Admin/Editor) -->
+                {% if user.is_superuser or is_editor %}
+                <div id="modal-delete-{{ menfess.id }}" class="modal-css">
+                    <div class="modal-content" style="color: black; font-family: 'Courier New', monospace;">
+                        <a href="#" class="close-css" title="Batal">&times;</a>
+                        <h2 style="font-family: 'Impact', sans-serif;">Konfirmasi Hapus</h2>
+                        <p>Yakin ingin menghapus menfess dari <strong>{{ menfess.sender }}</strong>?</p>
+                        <form method="POST" action="{% url 'main:delete_menfess' menfess.id %}">
+                            {% csrf_token %}
+                            <button type="submit" style="background-color: #ff3b3b; color: white; padding: 8px 16px; border: 2px solid #111; cursor: pointer; font-weight: bold;">Ya, Hapus!</button>
+                            <a href="#" style="margin-left:10px; text-decoration:none; color: #555;">Batal</a>
+                        </form>
+                    </div>
+                </div>
                 {% endif %}
-                
-                <div class="menfess-actions">
-                    <!-- Tombol pemicu Modal Edit dan Delete spesifik per ID -->
-                    <a href="#modal-edit-{{ menfess.id }}" class="btn-edit">Edit</a>
-                    <a href="#modal-delete-{{ menfess.id }}" class="btn-delete">Hapus</a>
-                </div>
-            </div>
 
-            <!-- 2. MODAL EDIT (Spesifik per pesan) -->
-            <div id="modal-edit-{{ menfess.id }}" class="modal-css">
-                <div class="modal-content">
-                    <a href="#" class="close-css" title="Tutup">&times;</a>
-                    <h2>Edit Menfess</h2>
-                    <form action="{% url 'main:edit_menfess' menfess.id %}" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <!-- Manual form agar data lama langsung terisi -->
-                        <p>
-                            <label for="id_sender">Sender:</label><br>
-                            <input type="text" name="sender" value="{{ menfess.sender }}" maxlength="255" required style="width: 100%;">
-                        </p>
-                        <p>
-                            <label for="id_message">Message:</label><br>
-                            <textarea name="message" required style="width: 100%; height: 80px;">{{ menfess.message }}</textarea>
-                        </p>
-                        <p>
-                            <label for="id_image">Image:</label><br>
-                            {% if menfess.image %}
-                                <span style="font-size: 12px;">Saat ini: {{ menfess.image.name }}</span><br>
-                            {% endif %}
-                            <input type="file" name="image" accept="image/*">
-                        </p>
-                        <button type="submit" class="btn-primary">Simpan Perubahan</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- 3. MODAL DELETE (Spesifik per pesan) -->
-            <div id="modal-delete-{{ menfess.id }}" class="modal-css">
-                <div class="modal-content">
-                    <a href="#" class="close-css" title="Batal">&times;</a>
-                    <h2>Konfirmasi Hapus</h2>
-                    <p>Yakin ingin menghapus menfess dari <strong>{{ menfess.sender }}</strong>?</p>
-                    <form method="POST" action="{% url 'main:delete_menfess' menfess.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn-delete">Ya, Hapus!</button>
-                        <a href="#" class="btn-secondary" style="margin-left:10px; text-decoration:none;">Batal</a>
-                    </form>
-                </div>
-            </div>
-
-        {% empty %}
-            <p>Belum ada menfess yang masuk. Jadilah yang pertama!</p>
-        {% endfor %}
-    </div>
-    
-    <br>
-    <a href="{% url 'main:show_main' %}">&larr; Kembali ke Beranda Profil</a>
-</div>
+            {% empty %}
+                <!-- Muncul kalau belum ada pesan -->
+                 <p class="empty-state" style="text-align: center; padding: 40px;">
+                    Belum ada pesan.
+                </p>
+            {% endfor %}
+        </div>
+        
+    </section>
+</main>
 {% endblock content %}
