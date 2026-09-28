@@ -35,12 +35,12 @@ class ProjectForm(ModelForm):
             ),
             "link": URLInput(
                 attrs={
-                    "placeholder": "https://mir4na.itch.io/where-do-you-belong",
+                    "placeholder": "masukkan URL proyekmu",
                 }
             ),
             "image": URLInput(
                 attrs={
-                    "placeholder": "https://drive.google.com/thumbnail?id=1NOtJJOOoPDyvS-uT9z2Q6T0GBPsldz2-&sz=w1000",
+                    "placeholder": "masukkan URL gambar proyekmu",
                 }
             ),
         }
