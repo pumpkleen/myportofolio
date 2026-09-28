@@ -231,7 +231,7 @@ def edit_project(request, id):
         return redirect('main:show_projects')
         
     context = {'form': form, 'project': project}
-    return render(request, "edit_project.html", context)
+    return render(request, "projects_form.html", context)
 
 def check_admin_or_editor(user):
     return user.is_superuser or user.groups.filter(name='Editor').exists()
