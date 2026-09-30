@@ -46,7 +46,7 @@
                 toast.style.opacity = '0';
                 setTimeout(() => toast.remove(), 500);
             }
-        }, 1800); // 3000 milidetik = 3 detik
+        }, 1800);
     </script>
 {% endif %}
         </div>
@@ -58,6 +58,7 @@
             <p>&copy; 2026 {{ name }}. Fakultas Ilmu Komputer, Universitas Indonesia. (v1.2)</p>
         </div>
     </footer>
+        {% include 'components/toast.html' %}
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
