@@ -3,11 +3,13 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from main.forms import ProjectForm
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
+
 
 from main.models import Experience, Project
 from .models import Menfess
@@ -31,21 +33,16 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
-def show_experience(request):
-    context = {
-        "name": "Mahi",
-        "experience_list": Experience.objects.all(),
-    }
-    return render(request, "experience.html", context)
+def show_experience(request):    
+    json_response = get_experiences_json(request)
 
-def show_projects(request):
-    json_response = get_projects_json(request)
-
-    projects = serializers.deserialize(
+    # Kembalikan JSON jadi object Python
+    experiences = serializers.deserialize(
         "json",
         json_response.content.decode("utf-8"),
     )
-    projects = [project.object for project in projects]
+    experiences = [exp.object for exp in experiences]
+    
     title_query = request.GET.get("title", "").strip()
 
     is_editor = False
@@ -54,11 +51,49 @@ def show_projects(request):
 
     context = {
         "name": "Mahi",
-        "project_list": projects,
+        "experience_list": experiences,
         'is_editor': is_editor,
         "title_query": title_query,
     }
+    return render(request, "experience.html", context)
+
+
+
+
+def show_projects(request):
+    title_query = request.GET.get("title", "").strip()
+
+    context = {
+        "name": "Mahi",
+        "title_query": title_query,
+        "form": ProjectForm(),
+    }
     return render(request, "projects.html", context)
+
+# def show_projects(request):
+#     json_response = get_projects_json(request)
+
+#     projects = serializers.deserialize(
+#         "json",
+#         json_response.content.decode("utf-8"),
+#     )
+#     projects = [project.object for project in projects]
+#     title_query = request.GET.get("title", "").strip()
+
+#     if title_query:
+#         projects = [project for project in projects if title_query.lower() in project.title.lower()]
+
+#     is_editor = False
+#     if request.user.is_authenticated:
+#         is_editor = request.user.groups.filter(name='Editor').exists()
+
+#     context = {
+#         "name": "Mahi",
+#         "project_list": projects,
+#         'is_editor': is_editor,
+#         "title_query": title_query,
+#     }
+#     return render(request, "projects.html", context)
 
 @login_required(login_url="/login/")  # Tambahkan baris ini
 def create_project(request):
@@ -81,16 +116,84 @@ def create_project(request):
     }
     return render(request, "projects_form.html", context)
 
+from django.http import JsonResponse
+
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
     projects = Project.objects.all()
-
+    
     if title_query:
         projects = projects.filter(title__icontains=title_query)
 
-    projects_json = serializers.serialize("json", projects, use_natural_foreign_keys=True)
-    return HttpResponse(projects_json, content_type="application/json")
+    data = []
+    for project in projects:
+        starred_users = project.starred_by.all()
+        is_starred = request.user in starred_users if request.user.is_authenticated else False
+        starred_by_names = ", ".join([u.username for u in starred_users])
+        image_url = ""
+        if hasattr(project, 'image') and project.image:
+            try:
+                image_url = project.image.url
+            except Exception:
+                image_url = str(project.image)
 
+        data.append({
+            "pk": str(project.id),
+            "fields": {
+                "title": project.title,
+                "description": project.description,
+                "link": project.link if hasattr(project, 'link') else "",
+                "image": image_url,
+                "star_count": 0,
+                "is_starred": False,
+                "starred_by_names": "",
+            }
+        })
+    return JsonResponse(data, safe=False)
+
+# def get_projects_json(request):
+#     title_query = request.GET.get("title", "").strip()
+#     projects = Project.objects.prefetch_related('starred_by').all()
+
+#     if title_query:
+#         projects = projects.filter(title__icontains=title_query)
+
+#     # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
+#     data = []
+#     for project in projects:
+#         starred_users = project.starred_by.all()
+#         is_starred = request.user in starred_users if request.user.is_authenticated else False
+#         starred_by_names = ", ".join([u.username for u in starred_users])
+
+#         data.append({
+#             "pk": str(project.id),
+#             "fields": {
+#                 "title": project.title,
+#                 "description": project.description,
+#                 "tech_stack": project.tech_stack,
+#                 "project_url": project.project_url,
+#                 "project_image_url": project.project_image_url,
+#                 "star_count": starred_users.count(),
+#                 "is_starred": is_starred,
+#                 "starred_by_names": starred_by_names,
+#             }
+#         })
+
+#     return JsonResponse(data, safe=False)
+
+def get_experience_json(request):
+    experiences = Experience.objects.all()
+    return HttpResponse(serializers.serialize("json", experiences), content_type="application/json")
+
+def get_experiences_json(request):
+    title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.all()
+
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
+
+    experiences_json = serializers.serialize("json", experiences, use_natural_foreign_keys=True)
+    return HttpResponse(experiences_json, content_type="application/json")
 
 @login_required(login_url="/login/")  # Tambahkan baris ini
 def delete_project(request, project_id):
@@ -231,7 +334,7 @@ def edit_project(request, id):
         return redirect('main:show_projects')
         
     context = {'form': form, 'project': project}
-    return render(request, "edit_project.html", context)
+    return render(request, "projects_form.html", context)
 
 def check_admin_or_editor(user):
     return user.is_superuser or user.groups.filter(name='Editor').exists()
@@ -261,3 +364,22 @@ def delete_experience(request, id):
     experience = get_object_or_404(Experience, pk=id)
     experience.delete()
     return redirect('main:show_experience')
+
+
+@require_POST
+def create_project_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya pemilik portofolio yang dapat menambahkan proyek."},
+            status=403,
+        )
+
+    form = ProjectForm(request.POST)
+    if form.is_valid():
+        project = form.save()
+        return JsonResponse(
+            {"message": "Proyek berhasil ditambahkan.", "pk": str(project.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
