@@ -116,8 +116,6 @@ def create_project(request):
     }
     return render(request, "projects_form.html", context)
 
-from django.http import JsonResponse
-
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
     projects = Project.objects.all()
@@ -127,9 +125,7 @@ def get_projects_json(request):
 
     data = []
     for project in projects:
-        starred_users = project.starred_by.all()
-        is_starred = request.user in starred_users if request.user.is_authenticated else False
-        starred_by_names = ", ".join([u.username for u in starred_users])
+        # Mengamankan URL gambar
         image_url = ""
         if hasattr(project, 'image') and project.image:
             try:
@@ -137,16 +133,39 @@ def get_projects_json(request):
             except Exception:
                 image_url = str(project.image)
 
+        # MENGAMBIL DATA STAR YANG SEBENARNYA DARI DATABASE
+        real_star_count = 0
+        real_is_starred = False
+        stargazer_names = ""
+
+        # Mengecek apakah model kamu punya relasi 'stars' (bawaan Tugas 4)
+        # MENGAMBIL DATA STAR YANG SEBENARNYA DARI DATABASE
+        real_star_count = 0
+        real_is_starred = False
+        stargazer_names = ""
+
+        # Ganti kata 'stars' menjadi 'starred_by' sesuai dengan models.py kamu!
+        if hasattr(project, 'starred_by'):
+            real_star_count = project.starred_by.count()
+            
+            # Cek apakah user yang lagi login sudah nge-star
+            if request.user.is_authenticated:
+                real_is_starred = project.starred_by.filter(id=request.user.id).exists()
+                
+            # Ambil 3 nama orang yang nge-star untuk tooltip
+            stargazers = project.starred_by.all()[:3]
+            stargazer_names = ", ".join([u.username for u in stargazers])
+
         data.append({
             "pk": str(project.id),
             "fields": {
                 "title": project.title,
                 "description": project.description,
-                "link": project.link if hasattr(project, 'link') else "",
+                "link": getattr(project, 'link', ""),
                 "image": image_url,
-                "star_count": 0,
-                "is_starred": False,
-                "starred_by_names": "",
+                "star_count": real_star_count,
+                "is_starred": real_is_starred,
+                "starred_by_names": stargazer_names,
             }
         })
     return JsonResponse(data, safe=False)

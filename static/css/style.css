@@ -892,8 +892,8 @@ main {
 }
 
 .btn-neon {
-    background-color: #d4ff00;
-    color: #111;
+    background-color: var(--ink);
+    color: var(--line);
     border: none;
     padding: 8px 25px;
     font-family: inherit;
@@ -902,6 +902,8 @@ main {
     border-radius: 20px; /* Bentuk pil */
     cursor: pointer;
     text-decoration: none;
+    color: white;
+    margin-left: 10px
 }
 .btn-neon:hover {
     background-color: white;

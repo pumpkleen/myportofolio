@@ -17,16 +17,17 @@
             
             <!-- Kolom Pencarian -->
             <div class="exp-search-wrapper">
-                <form id="project-search-form" class="project-search">
-                    <input type="search"
-                           id="search-input"
-                           name="title"
-                           value="{{ title_query }}"
-                           placeholder="Cari berdasarkan nama proyek"
-                           class="project-search__input"
-                           aria-label="Cari berdasarkan nama proyek">
-                    <button type="submit" class="button">Cari</button>
+                <div class="exp-search-wrapper">
+                <!-- Tambahkan id pada form dan hapus atribut action -->
+                <form id="project-search-form" class="exp-search-bar">
+                    <!-- Tambahkan id="search-input" pada input -->
+                    <input type="search" id="search-input" name="title" value="{{ title_query }}" placeholder="Cari berdasarkan nama proyek" aria-label="Cari berdasarkan nama proyek" style="border:none; background:transparent; flex:1; font-size:1.2rem; outline:none; color:#111;">
+                    
+                    <button type="submit" class="exp-search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
                 </form>
+            </div>
                 <!-- Loading State -->
                 <div id="loading" class="empty-state hide">
                     <p>Memuat projects...</p>
@@ -103,23 +104,28 @@ function getCookie(name) {
     return cookieValue;
 }
 
-async function fetchProjects() {
+// TAMBAH PARAMETER isSilent
+// 1. FUNGSI UTAMA (Sudah dilengkapi penangkap kata kunci)
+async function fetchProjects(isSilent = false, searchQuery = "") {
     try {
-        if (!gridContainer) {
-            alert("WADUH! Wadah <div id='grid'> tidak ditemukan! Cek HTML kamu di Langkah 1 tadi.");
-            return;
-        }
+        if (!gridContainer) return;
 
-        // Sembunyikan grid saat loading
-        gridContainer.style.display = 'none';
-        document.getElementById('loading')?.classList.remove('hide');
+        if (!isSilent) {
+            gridContainer.style.display = 'none';
+            document.getElementById('loading')?.classList.remove('hide');
+            document.getElementById('empty')?.classList.add('hide'); // Sembunyikan pesan kosong
+        }
         
-        const response = await fetch(BASE_PROJECTS_ENDPOINT);
-        if (!response.ok) throw new Error("Server gagal merespon. Status: " + response.status);
+        // Memasukkan kata kunci pencarian ke URL
+        const url = searchQuery ? `${BASE_PROJECTS_ENDPOINT}?title=${encodeURIComponent(searchQuery)}` : BASE_PROJECTS_ENDPOINT;
+        
+        console.log("Mencari data ke:", url); // Untuk ngecek di Inspect Element nanti
+        
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Server gagal merespon.");
         
         const rawData = await response.json();
         
-        // Ekstrak data brutal
         let projectData = [];
         if (Array.isArray(rawData)) projectData = rawData;
         else if (rawData.results) projectData = Array.isArray(rawData.results) ? rawData.results : Object.values(rawData.results);
@@ -127,8 +133,24 @@ async function fetchProjects() {
 
         document.getElementById('loading')?.classList.add('hide');
 
+        // Kalau hasil pencarian kosong
+        // Kalau hasil pencarian kosong
         if (projectData.length === 0) {
-            document.getElementById('empty')?.classList.remove('hide');
+            // PAKSA div 'empty' bawaan yang bikin rusak layout itu untuk TETAP SEMBUNYI!
+            document.getElementById('empty')?.classList.add('hide'); 
+            document.getElementById('error')?.classList.add('hide');
+
+            // Kita pakai area utama (gridContainer) untuk menampilkan pesan kosong secara elegan
+            gridContainer.innerHTML = `
+                <div style="text-align: center; padding: 60px 20px; width: 100%; grid-column: 1 / -1;">
+                    <h2 style="font-family: inherit; margin-bottom: 10px; color: inherit;">Oops! Tidak ada proyek...</h2>
+                    <p style="opacity: 0.7; font-size: 1.1rem;">
+                        Pencarian untuk "<strong>${escapeHtml(searchQuery)}</strong>" tidak membuahkan hasil. Coba kata kunci lain!
+                    </p>
+                </div>
+            `;
+            gridContainer.classList.remove('hide');
+            gridContainer.style.display = 'block'; 
             return;
         }
         
@@ -136,18 +158,16 @@ async function fetchProjects() {
         document.getElementById('error')?.classList.add('hide');
 
         gridContainer.innerHTML = '';
-        
-        // PAKSA GRID MUNCUL (Dobrak CSS yang menyembunyikan)
         gridContainer.classList.remove('hide');
         gridContainer.style.display = 'block'; 
 
         projectData.forEach(item => {
             const p = item.fields ? item.fields : item;
             const title = p.title || p.name || 'Untitled';
+            const projectId = item.pk || item.id || p.id;
             
             const el = document.createElement('div');
             el.className = 'proj-item';
-            // Paksa element ini terlihat!
             el.style.display = 'block';
             el.style.opacity = '1';
 
@@ -159,12 +179,34 @@ async function fetchProjects() {
             const linkUrl = p.project_url || p.link || '';
             const urlHtml = linkUrl ? `<a href="${escapeHtml(linkUrl)}" target="_blank" class="btn-proj">Visit Site</a>` : '';
 
+            const editUrl = "{% url 'main:edit_project' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', projectId);
+            const deleteUrl = "{% url 'main:delete_project' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', projectId);
+            const starUrl = "{% url 'main:toggle_star' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', projectId);
+
+            const starCount = p.star_count || 0;
+            const isStarred = p.is_starred || false;
+            const isStarredClass = isStarred ? " is-starred" : "";
+            const starText = isStarred ? "Unstar" : "Star";
+
+            const adminActionsHtml = IS_SUPERUSER ? `
+                <a href="${editUrl}" class="btn-neon">Edit</a>
+                <a href="${deleteUrl}" class="btn-neon" style="background-color: #ff3b3b; color: white; margin-left: 10px;" onclick="return confirm('Yakin ingin menghapus project ini?');">Delete</a>
+            ` : '';
+
             el.innerHTML = `
                 <div class="proj-content">
                     <div class="proj-text">
                         <h2 class="proj-name">${escapeHtml(title)}</h2>
-                        <div class="proj-actions">${urlHtml}</div>
+                        <div class="proj-actions">
+                            ${urlHtml}
+                            <button type="button" class="button button-star${isStarredClass}" style="font-family: inherit; margin-left: 10px;" onclick="toggleStarAjax('${starUrl}')">
+                                <span aria-hidden="true">★</span> ${starText} <span class="star-count">${starCount}</span>
+                            </button>
+                        </div>
                         <p class="proj-desc">${escapeHtml(p.description || '')}</p>
+                        <div class="proj-actions" style="margin-top: 20px;">
+                            ${adminActionsHtml}
+                        </div>
                     </div>
                     <div class="proj-visual">${imageHtml}</div>
                 </div>
@@ -173,10 +215,49 @@ async function fetchProjects() {
             gridContainer.appendChild(el);
         });
     } catch (error) {
-        alert("ADA ERROR JAVASCRIPT: " + error.message);
+        console.error("Error AJAX:", error);
         document.getElementById('loading')?.classList.add('hide');
         document.getElementById('error')?.classList.remove('hide');
     }
+}
+
+// 2. FUNGSI KLIK STAR (Tanpa Kedip)
+async function toggleStarAjax(url) {
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') }
+        });
+        if (response.ok) fetchProjects(true, document.getElementById('search-input')?.value || ""); 
+        else alert('Gagal ngasih star!');
+    } catch (error) {
+        alert('Koneksi terputus!');
+    }
+}
+
+// 3. CCTV PENCARIAN (Debouncing & Form Submit)
+const searchInput = document.getElementById('search-input');
+const searchForm = document.getElementById('project-search-form');
+let debounceTimer;
+
+// CCTV saat mengetik (Debouncing)
+if (searchInput) {
+    searchInput.addEventListener('input', function(e) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            fetchProjects(false, e.target.value);
+        }, 300); 
+    });
+}
+
+// CCTV saat menekan tombol Enter/Cari
+if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault(); 
+        if (searchInput) {
+            fetchProjects(false, searchInput.value);
+        }
+    });
 }
 
 async function addProject(event) {
@@ -211,5 +292,6 @@ if (projectForm) {
 
 // LANGSUNG JALANKAN PAS WEB DIBUKA
 fetchProjects();
+
 </script>
 {% endblock content %}
