@@ -28,6 +28,7 @@
                     </button>
                 </form>
             </div>
+            </div>
                 <!-- Loading State -->
                 <div id="loading" class="empty-state hide">
                     <p>Memuat projects...</p>
@@ -46,7 +47,6 @@
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </button>
                 </form> -->
-            </div>
             
             <!-- Tambah Proyek -->
             <p class="exp-add-link">
@@ -114,6 +114,7 @@ async function fetchProjects(isSilent = false, searchQuery = "") {
             gridContainer.style.display = 'none';
             document.getElementById('loading')?.classList.remove('hide');
             document.getElementById('empty')?.classList.add('hide'); // Sembunyikan pesan kosong
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
         
         // Memasukkan kata kunci pencarian ke URL
@@ -143,8 +144,8 @@ async function fetchProjects(isSilent = false, searchQuery = "") {
             // Kita pakai area utama (gridContainer) untuk menampilkan pesan kosong secara elegan
             gridContainer.innerHTML = `
                 <div style="text-align: center; padding: 60px 20px; width: 100%; grid-column: 1 / -1;">
-                    <h2 style="font-family: inherit; margin-bottom: 10px; color: inherit;">Oops! Tidak ada proyek...</h2>
-                    <p style="opacity: 0.7; font-size: 1.1rem;">
+                    <h2 style="font-family: inherit; margin-bottom: 10px; color: var(--accent);">Oops! Tidak ada proyek...</h2>
+                    <p style="opacity: 0.7; font-size: 1.1rem; color: var(--accent)">
                         Pencarian untuk "<strong>${escapeHtml(searchQuery)}</strong>" tidak membuahkan hasil. Coba kata kunci lain!
                     </p>
                 </div>

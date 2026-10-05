@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import ModelForm, TextInput, Textarea, URLInput, DateInput, Select
-
+from django.utils.html import strip_tags
 from main.models import Project, Menfess, Experience
 
 class ProjectForm(ModelForm):
@@ -106,6 +106,14 @@ class ExperienceForm(ModelForm):
                 }
             ),
         }
+
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        return strip_tags(title) if title else title
+
+    def clean_description(self):
+        description = self.cleaned_data.get('description')
+        return strip_tags(description) if description else description
 
         
 
