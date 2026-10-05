@@ -33,7 +33,6 @@
             </p>
         </div>
 
-        <!-- LOADING, ERROR, & EMPTY STATE (Bawaan Tutorial) -->
         <div id="loading" class="empty-state hide" style="text-align: center; padding: 40px;">
             <p>Memuat pengalaman...</p>
         </div>
@@ -46,9 +45,7 @@
             <p>Belum ada pengalaman yang ditambahkan atau ditemukan.</p>
         </div>
 
-        <!-- WADAH GRID -->
         <div class="exp-container hide" id="experience-container">
-            <!-- Data dari AJAX akan muncul di sini -->
         </div>
     </section>
 </main>
@@ -74,7 +71,6 @@
         return String(unsafe ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
     }
 
-    // --- FUNGSI AJAX YANG SUDAH DISAMAKAN DENGAN PROJECT ---
     async function fetchExperiences(isSilent = false, searchQuery = "") {
         try {
             if (!container) return;
@@ -82,14 +78,13 @@
             if (!isSilent) {
                 container.style.display = 'none';
                 document.getElementById('loading')?.classList.remove('hide');
-                document.getElementById('empty')?.classList.add('hide'); // Sembunyikan pesan kosong
+                document.getElementById('empty')?.classList.add('hide');
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
             
-            // Memasukkan kata kunci pencarian ke URL
             const url = searchQuery ? `${GET_EXP_URL}?title=${encodeURIComponent(searchQuery)}` : GET_EXP_URL;
             
-            console.log("Mencari data ke:", url); // Untuk ngecek di Inspect Element nanti
+            console.log("Mencari data ke:", url);
             
             const response = await fetch(url);
             if (!response.ok) throw new Error("Server gagal merespon.");
@@ -103,13 +98,10 @@
 
             document.getElementById('loading')?.classList.add('hide');
 
-            // Kalau hasil pencarian kosong
             if (experienceData.length === 0) {
-                // PAKSA div 'empty' bawaan yang bikin rusak layout itu untuk TETAP SEMBUNYI!
                 document.getElementById('empty')?.classList.add('hide'); 
                 document.getElementById('error')?.classList.add('hide');
 
-                // Pakai area utama (container) untuk menampilkan pesan kosong secara elegan
                 container.innerHTML = `
                     <div style="text-align: center; padding: 60px 20px; width: 100%; grid-column: 1 / -1;">
                         <h2 style="font-family: inherit; margin-bottom: 10px; color: var(--accent);">Oops! Tidak ada pengalaman...</h2>
@@ -130,7 +122,6 @@
             container.classList.remove('hide');
             container.style.display = 'block'; 
 
-            // Render Kartu Pengalaman
             experienceData.forEach(item => {
                 const f = item.fields ? item.fields : item;
                 const title = f.title || f.name || 'Untitled';
@@ -180,12 +171,10 @@
         }
     }
 
-    // CCTV Pencarian (Debouncing)
     let debounceTimer;
     if (searchInput) {
         searchInput.addEventListener('input', function(e) {
             clearTimeout(debounceTimer);
-            // Panggil tanpa silent (biar loading muncul), lalu kirim query
             debounceTimer = setTimeout(() => fetchExperiences(false, e.target.value.trim()), 300);
         });
     }
@@ -197,7 +186,6 @@
         });
     }
 
-    // Modal & Submit
     function closeExperienceModal() {
         const modal = document.getElementById("add-experience-modal");
         if (modal) modal.hidePopover();
@@ -216,23 +204,30 @@
                     body: new FormData(experienceForm),
                 });
                 
+                const result = await response.json().catch(() => ({}));
+
                 if (response.ok) {
                     experienceForm.reset();
                     closeExperienceModal();
-                    // Panggil mode SILENT (true) agar layar tidak berkedip setelah nambah data
+                    
+                    showToast('Berhasil', 'Pengalaman baru berhasil ditambahkan!', 'success');
+                    
                     fetchExperiences(true, searchInput ? searchInput.value.trim() : "");
                 } else {
-                    alert('Gagal menambahkan pengalaman.');
+                    const errorMessages = result.errors 
+                        ? Object.values(result.errors).flat().map(e => e.message) 
+                        : [result.message || 'Terjadi kesalahan saat menyimpan data.'];
+                    showToast('Gagal Menambahkan', errorMessages.join(', '), 'error');
                 }
             } catch (error) {
                 console.error('Error adding experience:', error);
+                showToast('Kesalahan Jaringan', 'Tidak dapat terhubung ke server.', 'error');
             } finally {
                 if (submitButton) submitButton.disabled = false;
             }
         });
     }
 
-    // Panggil saat pertama kali load halaman
     fetchExperiences();
 </script>
 {%endblock content%}

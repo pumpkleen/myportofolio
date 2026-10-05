@@ -202,17 +202,28 @@ def get_experiences_json(request):
         })
     return JsonResponse(data, safe=False)
 
-@csrf_exempt
+@require_POST
 def add_experience_ajax(request):
-    if request.method == 'POST':
-        form = ExperienceForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponse(b"CREATED", status=201)
-        else:
-            return JsonResponse({"errors": form.errors}, status=400)
-            
-    return HttpResponse(b"NOT FOUND", status=404)
+    # Cek hak akses (Superuser / Editor)
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya admin/pemilik yang dapat menambahkan pengalaman."},
+            status=403,
+        )
+    
+    # Masukkan data POST ke dalam form
+    form = ExperienceForm(request.POST)
+    
+    # Validasi form (termasuk anti-XSS strip_tags di forms.py kalau sudah kamu buat)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "Pengalaman berhasil ditambahkan.", "pk": str(experience.id)},
+            status=201,
+        )
+    
+    # Jika gagal validasi, kirim pesan error spesifik
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 @login_required(login_url="/login/")  # Tambahkan baris ini
 def delete_project(request, project_id):
