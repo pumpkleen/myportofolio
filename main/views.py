@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 
 from main.models import Experience, Project
@@ -33,31 +34,15 @@ def show_main(request):
     }
     return render(request, "index.html", context)
 
-def show_experience(request):    
-    json_response = get_experiences_json(request)
-
-    # Kembalikan JSON jadi object Python
-    experiences = serializers.deserialize(
-        "json",
-        json_response.content.decode("utf-8"),
-    )
-    experiences = [exp.object for exp in experiences]
-    
+def show_experience(request):
     title_query = request.GET.get("title", "").strip()
 
-    is_editor = False
-    if request.user.is_authenticated:
-        is_editor = request.user.groups.filter(name='Editor').exists()
-
     context = {
-        "name": "Mahi",
-        "experience_list": experiences,
-        'is_editor': is_editor,
+        'name': "Mahi",
+        'form': ExperienceForm(), 
         "title_query": title_query,
     }
     return render(request, "experience.html", context)
-
-
 
 
 def show_projects(request):
@@ -116,8 +101,6 @@ def create_project(request):
     }
     return render(request, "projects_form.html", context)
 
-from django.http import JsonResponse
-
 def get_projects_json(request):
     title_query = request.GET.get("title", "").strip()
     projects = Project.objects.all()
@@ -127,9 +110,6 @@ def get_projects_json(request):
 
     data = []
     for project in projects:
-        starred_users = project.starred_by.all()
-        is_starred = request.user in starred_users if request.user.is_authenticated else False
-        starred_by_names = ", ".join([u.username for u in starred_users])
         image_url = ""
         if hasattr(project, 'image') and project.image:
             try:
@@ -137,16 +117,33 @@ def get_projects_json(request):
             except Exception:
                 image_url = str(project.image)
 
+        real_star_count = 0
+        real_is_starred = False
+        stargazer_names = ""
+
+        real_star_count = 0
+        real_is_starred = False
+        stargazer_names = ""
+
+        if hasattr(project, 'starred_by'):
+            real_star_count = project.starred_by.count()
+            
+            if request.user.is_authenticated:
+                real_is_starred = project.starred_by.filter(id=request.user.id).exists()
+                
+            stargazers = project.starred_by.all()[:3]
+            stargazer_names = ", ".join([u.username for u in stargazers])
+
         data.append({
             "pk": str(project.id),
             "fields": {
                 "title": project.title,
                 "description": project.description,
-                "link": project.link if hasattr(project, 'link') else "",
+                "link": getattr(project, 'link', ""),
                 "image": image_url,
-                "star_count": 0,
-                "is_starred": False,
-                "starred_by_names": "",
+                "star_count": real_star_count,
+                "is_starred": real_is_starred,
+                "starred_by_names": stargazer_names,
             }
         })
     return JsonResponse(data, safe=False)
@@ -181,19 +178,52 @@ def get_projects_json(request):
 
 #     return JsonResponse(data, safe=False)
 
-def get_experience_json(request):
-    experiences = Experience.objects.all()
-    return HttpResponse(serializers.serialize("json", experiences), content_type="application/json")
 
 def get_experiences_json(request):
     title_query = request.GET.get("title", "").strip()
-    experiences = Experience.objects.all()
-
+    experiences = Experience.objects.all().order_by('-started_at')
+    
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
 
-    experiences_json = serializers.serialize("json", experiences, use_natural_foreign_keys=True)
-    return HttpResponse(experiences_json, content_type="application/json")
+    data = []
+    for exp in experiences:
+        data.append({
+            "pk": str(exp.id),
+            "fields": {
+                "title": exp.title,
+                "description": exp.description,
+                "category": exp.get_category_display(), 
+                "thumbnail": exp.thumbnail if exp.thumbnail else "",
+                "started_at": exp.started_at.strftime("%b %Y") if exp.started_at else "Unknown",
+                "ended_at": exp.ended_at.strftime("%b %Y") if exp.ended_at else "Present",
+                "is_ongoing": exp.is_ongoing
+            }
+        })
+    return JsonResponse(data, safe=False)
+
+@require_POST
+def add_experience_ajax(request):
+    # Cek hak akses (Superuser / Editor)
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Hanya admin/pemilik yang dapat menambahkan pengalaman."},
+            status=403,
+        )
+    
+    # Masukkan data POST ke dalam form
+    form = ExperienceForm(request.POST)
+    
+    # Validasi form (termasuk anti-XSS strip_tags di forms.py kalau sudah kamu buat)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "Pengalaman berhasil ditambahkan.", "pk": str(experience.id)},
+            status=201,
+        )
+    
+    # Jika gagal validasi, kirim pesan error spesifik
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 @login_required(login_url="/login/")  # Tambahkan baris ini
 def delete_project(request, project_id):

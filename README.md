@@ -92,4 +92,24 @@ Debugging CSS: AI membantu saya menemukan bug pada tata letak kartu proyek saya 
 Pemahaman Konsep: Saya meminta bantuan AI untuk menjelaskan cara kerja Django Admin dan bagaimana menggunakannya untuk mengatur hak akses grup Editor tanpa harus melakukan hard-coding di views.py.
 Troubleshooting API: AI membantu saya menemukan kesalahan routing path URL ketika saya mencoba mengakses endpoint JSON, serta memastikan implementasi `use_natural_foreign_keys=True` sudah benar agar ID database tidak bocor.
 
-bugs
+
+### TUGAS 5
+Dalam pengerjaan Tugas 5 Pemrograman Berbasis Platform (PBP) ini, saya memanfaatkan Generative AI Gemini sebagai mitra diskusi dan asisten pemecahan masalah teknis. Berikut adalah rincian kontribusi AI dalam proses pengembangan:
+
+1. Pemecahan Bug dan Error Debugging
+
+Integrasi Frontend dan Backend: AI membantu menemukan missing link saat form gagal menambahkan data, dengan mengingatkan ketiadaan fungsi add_experience_ajax pada views dan membantu merakit kerangka blok try-catch di JavaScript agar Notifikasi Toast dapat menangkap pesan error spesifik dari server.
+
+2. Eksplorasi Konsep Web Interactivity dan UI/UX
+
+Implementasi Modal HTML5 Popover API: AI awalnya menyarankan solusi CSS/JS konvensional untuk modal, namun saya melakukan koreksi mandiri dan mengarahkan AI untuk mematuhi standar arsitektur modern (HTML5 Popover API) sesuai panduan tugas. AI kemudian membantu merapikan atribut popovertarget dan mengintegrasikan file HTML tersebut ke dalam struktur templates/components/.
+
+Logika AJAX dan Debouncing: AI membantu menstrukturkan alur data asinkronus menggunakan fetch() dan await, serta merapikan logika debouncing pada search bar agar request ke server lebih efisien dan layar tidak berkedip (flicker) saat data di-refresh.
+
+3. Pendalaman Konsep Teoritis dan Keamanan (Security)
+
+Keamanan Anti-XSS: AI membantu mengingatkan penerapan keamanan lapis ganda, yaitu escaping karakter menggunakan JavaScript di sisi frontend dan pembersihan input menggunakan strip_tags pada kelas ModelForm di sisi backend.
+
+Penyusunan Dokumentasi: AI membantu mengkurasi dan menguraikan pemahaman teknis terkait peran debouncing, fungsi krusial await pada proses asinkronus, serta rentannya manipulasi DOM terhadap serangan XSS sebagai referensi penulisan jawaban reflektif di README.
+
+Seluruh baris kode (terutama arsitektur model dan views), tata letak struktur layout, desain aset visual, serta penyusunan logika utama tetap merupakan karya orisinal dan arahan mandiri saya. AI murni berfungsi sebagai alat verifikasi, troubleshooter, dan fasilitator implementasi teknis.
