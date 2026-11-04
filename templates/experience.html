@@ -145,7 +145,7 @@
                 if (canDelete) actionsHtml += `<a href="${deleteUrl}" class="btn-neon" style="background-color: #ff3b3b; color: white; margin-left: 10px;" onclick="return confirm('Yakin ingin menghapus pengalaman ini?');">Delete</a>`;
                 let actionDiv = actionsHtml ? `<div class="exp-actions" style="margin-top: 15px;">${actionsHtml}</div>` : '';
 
-                let ongoingText = f.is_ongoing ? "Sedang berlangsung - Sekarang" : "Selesai";
+                let ongoingText = f.is_ongoing ? "Sedang berlangsung" : "Selesai";
 
                 el.innerHTML = `
                     <div class="exp-content">
