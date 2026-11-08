@@ -251,7 +251,6 @@ async function addProject(event) {
 if (projectForm) projectForm.addEventListener('submit', addProject);
 
 gridContainer.addEventListener('click', async function(event) {
-    event.preventDefault()
 
     const button = event.target.closest('button[data-action]');
     if (!button || button.disabled) return;
