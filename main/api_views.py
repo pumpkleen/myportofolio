@@ -125,6 +125,7 @@ def experience_detail(request, experience_id): #404 untuk data yang tidak ditemu
     serializer.save()
     return Response(serializer.data)
 
+# Memakai IsAuthenticated pada endpoint star, dengan akun pemberi star selalu diambil dari request.user.
 @api_view(["POST"])
 @authentication_classes([SessionAuthentication])
 @permission_classes([IsAuthenticated])
