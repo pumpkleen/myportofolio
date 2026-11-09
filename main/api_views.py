@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from main.models import Project, Experience
-from main.permissions import IsPortfolioOwnerOrReadOnly
+from main.permissions import IsPortfolioOwnerOrReadOnly, IsPortfolioOwnerOrEditorOrReadOnly
 from main.serializers import ProjectSerializer, ExperienceSerializer
 
 
@@ -68,14 +68,24 @@ def project_star(request, project_id):
     return Response(serializer.data)
 
 
+# Menerapkan IsPortfolioOwnerOrEditorOrReadOnly dari Tutorial 07
+# (atau permission class lain yang setara) pada endpoint daftar dan detail bagianmu,
+# sesuai keempat peran di atas.
+# Membuat API view berbasis fungsi dengan @api_view dan SessionAuthentication
+# di main/api_views.py untuk daftar (GET, POST), detail (GET, PUT, PATCH, DELETE), dan star (POST).
+
+# Mengembalikan status HTTP yang sesuai: 
+# 201 saat data dibuat, 400 untuk input yang tidak valid,
+# 403 untuk tindakan yang tidak diizinkan, 404 untuk data yang tidak ditemukan,
+# dan 204 setelah data dihapus.
 
 @api_view(["GET", "HEAD", "POST"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortfolioOwnerOrReadOnly])
+@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly]) # 403 untuk tindakan yang tidak diizinkan
 def experience_list(request):
     if request.method in ("GET", "HEAD"):
-        experiences = Experience.objects.order_by("title", "id")
-        title = request.query_params.get("title", "").strip()
+        experiences = Experience.objects.prefetch_related("starred_by").order_by("title", "id")
+        title = request.query_params.get("title", "").strip() #Memindahkan pencarian dari Tugas 5 ke parameter query pada endpoint daftar.
         if title:
             experiences = experiences.filter(title__icontains=title)
         serializer = ExperienceSerializer(
@@ -86,14 +96,18 @@ def experience_list(request):
     serializer = ExperienceSerializer(data=request.data, context={"request": request})
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.data, status=status.HTTP_201_CREATED) # 201 saat data dibuat
 
+
+# Menerapkan IsPortfolioOwnerOrEditorOrReadOnly dari Tutorial 07
+# (atau permission class lain yang setara) pada endpoint daftar dan detail bagianmu,
+# sesuai keempat peran di atas.
 @api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
 @authentication_classes([SessionAuthentication])
-@permission_classes([IsPortfolioOwnerOrReadOnly])
-def experience_detail(request, project_id):
+@permission_classes([IsPortfolioOwnerOrEditorOrReadOnly])
+def experience_detail(request, experience_id): #404 untuk data yang tidak ditemukan,
     experience = get_object_or_404(
-        Experience.objects, pk=project_id,
+        Experience.objects.prefetch_related("starred_by"), pk=experience_id,
     )
     if request.method in ("GET", "HEAD"):
         serializer = ExperienceSerializer(experience, context={"request": request})
@@ -101,12 +115,26 @@ def experience_detail(request, project_id):
 
     if request.method == "DELETE":
         experience.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT) #204 setelah data dihapus.
 
     serializer = ExperienceSerializer(
         experience, data=request.data, partial=request.method == "PATCH",
         context={"request": request},
     )
-    serializer.is_valid(raise_exception=True)
+    serializer.is_valid(raise_exception=True) #400 untuk input yang tidak valid
     serializer.save()
+    return Response(serializer.data)
+
+# Memakai IsAuthenticated pada endpoint star, dengan akun pemberi star selalu diambil dari request.user.
+@api_view(["POST"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
+def experience_star(request, experience_id):
+    experience = get_object_or_404(Experience, pk=experience_id)
+    if experience.starred_by.filter(pk=request.user.pk).exists():
+        experience.starred_by.remove(request.user)
+    else:
+        experience.starred_by.add(request.user)
+    
+    serializer = ExperienceSerializer(experience, context={"request": request})
     return Response(serializer.data)

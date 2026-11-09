@@ -113,3 +113,55 @@ Keamanan Anti-XSS: AI membantu mengingatkan penerapan keamanan lapis ganda, yait
 Penyusunan Dokumentasi: AI membantu mengkurasi dan menguraikan pemahaman teknis terkait peran debouncing, fungsi krusial await pada proses asinkronus, serta rentannya manipulasi DOM terhadap serangan XSS sebagai referensi penulisan jawaban reflektif di README.
 
 Seluruh baris kode (terutama arsitektur model dan views), tata letak struktur layout, desain aset visual, serta penyusunan logika utama tetap merupakan karya orisinal dan arahan mandiri saya. AI murni berfungsi sebagai alat verifikasi, troubleshooter, dan fasilitator implementasi teknis.
+
+
+### TUGAS 6
+1. Jelaskan apa yang dimaksud dengan REST dan mengapa mengembalikan JSON saja belum cukup untuk menyebut sebuah API sebagai RESTful! Jelaskan pula perbedaan PUT dan PATCH beserta contoh kapan masing-masing sebaiknya digunakan!
+
+REST (Representational State Transfer) adalah gaya arsitektur standar untuk merancang API, di mana klien dan server saling berinteraksi secara stateless (tidak menyimpan memori state di server) dengan menganggap setiap entitas data (seperti Experience atau Project) sebagai sebuah sumber daya (resource) yang memiliki URL spesifik (contoh: /api/experiences/).
+Mengapa JSON saja tidak cukup disebut RESTful? Mengembalikan JSON hanyalah soal format output. Sebuah API baru disebut RESTful jika mematuhi prinsip arsitekturnya: menggunakan kata kerja HTTP yang tepat untuk setiap aksi (GET untuk mengambil, POST membuat, DELETE menghapus), mengembalikan kode status HTTP yang standar (201 Created, 404 Not Found), dan menggunakan struktur URL berbasis sumber daya (bukan URL seperti /api/hapusData?id=1).
+
+perbedaan PUT dan PATCH:
+
+PUT (Pembaruan Menyeluruh) digunakan untuk mengganti (me-replace) seluruh isi dari sebuah sumber daya. Jika kamu tidak menyertakan satu field (misalnya lupa mengirim description), field tersebut akan diubah menjadi kosong atau default. Contoh: Pengguna menekan tombol "Simpan" pada formulir Edit Pengalaman yang mengirim ulang seluruh kolom (Judul, Deskripsi, Kategori, Tanggal).
+
+PATCH (Pembaruan Parsial) digunakan untuk memperbarui hanya sebagian field tertentu dari sebuah sumber daya tanpa mengganggu field lainnya. Contoh: Pengguna menekan tombol Star untuk mengubah nilai is_starred menjadi true, tanpa perlu mengirim ulang data judul atau deskripsi proyek tersebut.
+
+2. Jelaskan peran serializer pada Django REST Framework! Apa keuntungannya dibandingkan merakit dictionary secara manual dengan JsonResponse seperti pada Tutorial 05?
+Dalam Django REST Framework, serializer berfungsi layaknya penerjemah. Serializer mengubah tipe data kompleks, seperti QuerySet atau objek Model Django, menjadi tipe data Python dasar agar mudah diubah menjadi JSON (serialization). Sebaliknya, serializer juga dapat menerima JSON dan mengubahnya kembali menjadi objek Model (deserialization).
+
+Keuntungan menggunakan Serializer:
+Validasi Otomatis: Saat menerima data (lewat metode POST/PUT), serializer otomatis memvalidasi kesesuaian tipe data dan batasan lainnya, sehingga pengembang tidak perlu repot membuat ratusan baris kode if-else seperti di Tutorial 05.
+Kode Lebih Bersih (DRY): Dengan menggunakan ModelSerializer, pengembang hanya perlu mendefinisikan model dan fields-nya. DRF otomatis memetakan atribut, sehingga pengembang tidak perlu merangkai objek secara manual ke bentuk dictionary.
+Kemudahan Menangani Relasi & Komputasi: Menangani relasi antar-tabel atau field hasil perhitungan lebih praktis menggunakan fitur seperti SerializerMethodField.
+
+3. Jelaskan perbedaan autentikasi dan otorisasi pada Django REST Framework! Mengapa hak akses harus diperiksa dengan permission class di server, bukan hanya dengan menyembunyikan tombol di template?
+
+Perbedaan Autentikasi dan Otorisasi:
+
+Autentikasi: Menjawab "Siapakah kamu?". Proses ini memverifikasi identitas pengguna, misalnya lewat pengecekan username dan password atau mengecek token sesi.
+
+Otorisasi: Menjawab "Apakah kamu boleh melakukan ini?". Proses ini menentukan hak akses pengguna (RBAC), seperti memastikan pengunjung biasa tidak dapat menghapus data, atau Editor yang hanya boleh mengubah data.
+
+Mengapa harus menggunakan Permission Class di Server?
+Menyembunyikan tombol Delete di HTML (template) hanyalah tindakan pencegahan untuk pengguna biasa, namun tidak dapat menahan pengguna dengan niat buruk. Pengguna tersebut bisa memanipulasi interface dengan menggunakan Inspect Element, atau mengirimkan request DELETE secara langsung menggunakan Postman atau cURL. Dengan menerapkan permission class di server, request dari luar yang tidak memenuhi persyaratan hak akses akan otomatis ditolak dan melindungi integritas database.
+
+4. Jelaskan mengapa permintaan yang mengubah data tetap memerlukan token CSRF ketika API memakai SessionAuthentication! Mengapa test yang memakai force_authenticate tidak cukup untuk membuktikan bahwa perlindungan CSRF berjalan?
+
+Mengapa Token CSRF Tetap Dibutuhkan?
+Saat SessionAuthentication digunakan, identitas atau kredensial pengguna tersimpan dalam cookie sesi (session ID) browser. Sayangnya, browser selalu melampirkan cookie ini dalam setiap permintaan ke domain yang sama. Jika pengguna dijebak membuka situs web berbahaya yang diam-diam mengirim request POST ke API, browser akan terus mengirimkan cookie tersebut. Oleh karena itu, Token CSRF, yang dikirim di luar cookie (seperti dalam header X-CSRFToken), bertindak sebagai bukti bahwa permintaan benar-benar berasal dari situs atau aplikasi resmi, dan bukan dari serangan situs pihak ketiga.
+
+Mengapa force_authenticate tidak cukup untuk tes CSRF?
+Fungsi force_authenticate dalam APITestCase hanya jalan pintas dalam proses testing. Saat fungsi ini digunakan, status login akan dipaksakan masuk ke objek request tanpa harus melewati lapisan keamanan middleware di Django, yang berarti pemeriksaan CSRF sepenuhnya diabaikan. Untuk memverifikasi apakah CSRF bekerja, harus disimulasikan alur kerja HTTP sebenarnya menggunakan metode seperti APIClient(enforce_csrf_checks=True) dan .login().
+
+
+## AI Disclosure
+
+Dalam proses pengerjaan Tugas 6 ini, saya memanfaatkan Google Gemini sebagai teman diskusi. Rincian pemanfaatan AI dalam proyek ini adalah sebagai berikut:
+
+- Mengidentifikasi akar masalah pada test cases yang gagal (khususnya terkait validasi XSS, pemrosesan `ChoiceField`, dan manipulasi data parsial) serta membantu merestrukturisasi `APITestCase` pada Django REST Framework hingga mencapai 100% test coverage tanpa error.
+
+- Membantu menyusun struktur fungsi asinkron (AJAX/Fetch API) pada JavaScript frontend, termasuk penanganan promise, implementasi notifikasi Toast, dan penyisipan header `X-CSRFToken` yang aman untuk operasi CRUD.
+- Menjadi teman diskusi untuk memperdalam pemahaman teoritis terkait arsitektur RESTful API, peran krusial serializer, dan perbedaan mendasar antara mekanisme autentikasi dan otorisasi.
+
+Seluruh baris kode, arsitektur logika, dan solusi penyelesaian masalah yang disarankan oleh AI telah saya tinjau ulang, pelajari, dan integrasikan secara manual agar sepenuhnya selaras dengan struktur model awal proyek saya serta memenuhi seluruh metrik penilaian tugas.
