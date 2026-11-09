@@ -9,3 +9,16 @@ class IsPortfolioOwnerOrReadOnly(BasePermission):
             request.method in SAFE_METHODS
             or request.user.is_superuser
         )
+
+class IsPortfolioOwnerOrEditorOrReadOnly(BasePermission):
+    message = "Only the owner can create or delete. Editors can only modify."
+
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+        if request.user.is_superuser:
+            return True
+        if request.method in ("PUT", "PATCH"):
+            return request.user.groups.filter(name="Editor").exists()
+            
+        return False
