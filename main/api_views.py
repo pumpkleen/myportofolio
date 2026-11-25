@@ -13,7 +13,6 @@ from main.serializers import ProjectSerializer, ExperienceSerializer
 
 
 @api_view(["GET", "HEAD", "POST"])
-@authentication_classes([SessionAuthentication])
 @permission_classes([IsPortfolioOwnerOrReadOnly])
 def project_list(request):
     if request.method in ("GET", "HEAD"):
@@ -33,7 +32,6 @@ def project_list(request):
 
 
 @api_view(["GET", "HEAD", "PUT", "PATCH", "DELETE"])
-@authentication_classes([SessionAuthentication])
 @permission_classes([IsPortfolioOwnerOrReadOnly])
 def project_detail(request, project_id):
     project = get_object_or_404(
@@ -138,3 +136,11 @@ def experience_star(request, experience_id):
     
     serializer = ExperienceSerializer(experience, context={"request": request})
     return Response(serializer.data)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def api_logout(request):
+    # TODO: Delete request.auth if it is not None, then return HTTP 204 No Content
+    if request.auth is not None:
+        request.auth.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
